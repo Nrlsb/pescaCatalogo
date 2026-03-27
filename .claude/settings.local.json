@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx:*)",
+      "Bash(cp -r /c/Users/Usuario/Desktop/Proyectos/pescaapp/. /c/Users/Usuario/Desktop/Proyectos/Pesca/)",
+      "Bash(rm -rf /c/Users/Usuario/Desktop/Proyectos/pescaapp)",
+      "Bash(find /c/Users/Usuario/Desktop/Proyectos/Pesca -name *.ts -o -name *.tsx -o -name *.js -o -name *.mjs)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(for file:*)",
+      "Bash(do)",
+      "Bash(sed -i '1s/^/export const dynamic = \"\"force-dynamic\"\";\\\\n/' \"$file\")",
+      "Bash(done)"
+    ]
+  }
+}
