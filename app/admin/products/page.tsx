@@ -2,8 +2,9 @@ export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { formatCurrency } from "@/lib/formatters";
 import Link from "next/link";
+import Image from "next/image";
 import Badge from "@/components/ui/Badge";
-import { Plus, Pencil } from "lucide-react";
+import { Plus, Pencil, Image as ImageIcon } from "lucide-react";
 import DeleteProductButton from "@/components/admin/DeleteProductButton";
 import type { Product } from "@/types/database";
 
@@ -46,11 +47,27 @@ export default async function AdminProductsPage() {
             {products?.map((product) => (
               <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-5 py-4">
-                  <div>
-                    <p className="font-medium text-gray-900">{product.name}</p>
-                    {product.brand && (
-                      <p className="text-xs text-gray-500">{product.brand}</p>
-                    )}
+                  <div className="flex items-center gap-3">
+                    <div className="relative h-10 w-10 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-100">
+                      {product.images && product.images.length > 0 ? (
+                        <Image
+                          src={product.images[0]}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center text-gray-400">
+                          <ImageIcon size={16} />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{product.name}</p>
+                      {product.brand && (
+                        <p className="text-xs text-gray-500">{product.brand}</p>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="px-5 py-4 text-gray-600">

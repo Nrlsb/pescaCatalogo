@@ -6,7 +6,9 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import { slugify } from "@/lib/formatters";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Package, Image as ImageIcon, Settings, Info, DollarSign } from "lucide-react";
+import ImageUpload from "./ImageUpload";
+import StockAdjustButton from "./StockAdjustButton";
 
 interface Category {
   id: string;
@@ -32,12 +34,14 @@ interface ProductFormProps {
     price: number;
     compare_at_price: number | null;
     cost_price: number | null;
+    weight_grams: number | null;
     category_id: string | null;
     is_active: boolean;
     is_featured: boolean;
     low_stock_threshold: number;
     images: string[];
     product_variants?: Variant[];
+    inventory?: { quantity: number }[];
   };
 }
 
@@ -54,11 +58,13 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
     price: initialData?.price?.toString() ?? "",
     compare_at_price: initialData?.compare_at_price?.toString() ?? "",
     cost_price: initialData?.cost_price?.toString() ?? "",
+    weight_grams: initialData?.weight_grams?.toString() ?? "",
     category_id: initialData?.category_id ?? "",
     is_active: initialData?.is_active ?? true,
     is_featured: initialData?.is_featured ?? false,
     low_stock_threshold: initialData?.low_stock_threshold?.toString() ?? "5",
   });
+  const [images, setImages] = useState<string[]>(initialData?.images ?? []);
   const [variants, setVariants] = useState<Variant[]>(
     initialData?.product_variants ?? []
   );
@@ -111,6 +117,8 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         cost_price: form.cost_price ? parseFloat(form.cost_price) : null,
         low_stock_threshold: parseInt(form.low_stock_threshold),
         category_id: form.category_id || null,
+        weight_grams: form.weight_grams ? parseFloat(form.weight_grams) : null,
+        images,
         variants,
         initial_stock: isEdit ? undefined : parseInt(initialStock),
       };
@@ -137,8 +145,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic info */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-        <h2 className="font-semibold text-gray-900">Información básica</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+          <Info className="text-blue-600" size={20} />
+          <h2 className="font-semibold text-gray-900">Información básica</h2>
+        </div>
         <Input
           label="Nombre del producto *"
           name="name"
@@ -195,9 +206,21 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         />
       </div>
 
+      {/* Images */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+          <ImageIcon className="text-blue-600" size={20} />
+          <h2 className="font-semibold text-gray-900">Multimedia</h2>
+        </div>
+        <ImageUpload images={images} onChange={setImages} />
+      </div>
+
       {/* Pricing */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-        <h2 className="font-semibold text-gray-900">Precios</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+          <DollarSign className="text-blue-600" size={20} />
+          <h2 className="font-semibold text-gray-900">Precios</h2>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Input
             label="Precio de venta *"
@@ -236,8 +259,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       </div>
 
       {/* Inventory */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-        <h2 className="font-semibold text-gray-900">Inventario</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+          <Package className="text-blue-600" size={20} />
+          <h2 className="font-semibold text-gray-900">Inventario</h2>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           {!isEdit && (
             <Input
@@ -249,6 +275,23 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
               placeholder="0"
             />
           )}
+
+          {isEdit && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 block">Stock actual</label>
+              <div className="flex items-center gap-4">
+                <span className="text-2xl font-bold text-gray-900">
+                  {initialData.inventory?.[0]?.quantity ?? 0}
+                </span>
+                <StockAdjustButton
+                  productId={initialData.id}
+                  productName={initialData.name}
+                />
+              </div>
+              <p className="text-xs text-gray-500">Ajusta el stock manualmente si es necesario</p>
+            </div>
+          )}
+
           <Input
             label="Umbral stock bajo"
             name="low_stock_threshold"
@@ -259,12 +302,30 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             helperText="Alerta cuando el stock sea menor a este número"
           />
         </div>
+        <div className="pt-4 border-t border-gray-100">
+          <h3 className="text-sm font-medium text-gray-900 mb-4 italic">Detalles físicos (opcional)</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              label="Peso (gramos)"
+              name="weight_grams"
+              type="number"
+              min="0"
+              value={form.weight_grams}
+              onChange={handleChange}
+              placeholder="0"
+              helperText="Útil para cálculo de envío"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Variants */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Variantes (opcional)</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+        <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <Settings className="text-blue-600" size={20} />
+            <h2 className="font-semibold text-gray-900">Variantes (opcional)</h2>
+          </div>
           <button
             type="button"
             onClick={addVariant}
@@ -323,8 +384,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       </div>
 
       {/* Settings */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-3">
-        <h2 className="font-semibold text-gray-900">Configuración</h2>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
+        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+          <Settings className="text-blue-600" size={20} />
+          <h2 className="font-semibold text-gray-900">Configuración</h2>
+        </div>
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
