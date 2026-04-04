@@ -34,19 +34,32 @@ export default function RegisterPage() {
       return;
     }
     setLoading(true);
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: { data: { full_name: form.full_name } },
-    });
-    if (authError) {
-      setError(authError.message);
+    try {
+      const supabase = createClient();
+      const { error: authError } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: { data: { full_name: form.full_name } },
+      });
+
+      if (authError) {
+        // Manejo específico para error de servidor (500)
+        if (authError.status === 500 || authError.message.includes("Database error")) {
+          setError("Error interno de la base de datos. Por favor, asegurate de haber ejecutado el archivo schema.sql en Supabase.");
+        } else {
+          setError(authError.message);
+        }
+        setLoading(false);
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      setError("Ocurrió un fallo de red o un error inesperado. Revisá tu conexión o la URL de Supabase.");
       setLoading(false);
-      return;
     }
-    router.push("/");
-    router.refresh();
   };
 
   return (
