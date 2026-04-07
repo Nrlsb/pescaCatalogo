@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useCallback, useMemo } from "react";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -29,12 +30,12 @@ const links = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await supabase.auth.signOut();
     router.push("/auth/login");
-  };
+  }, [supabase, router]);
 
   return (
     <aside className="w-64 min-h-screen bg-gray-900 text-white flex flex-col">
@@ -56,11 +57,10 @@ export default function AdminSidebar() {
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                active
-                  ? "bg-blue-700 text-white"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98] ${active
+                  ? "bg-blue-700 text-white shadow-sm"
                   : "text-gray-400 hover:bg-gray-800 hover:text-white"
-              }`}
+                }`}
             >
               <Icon size={18} />
               {label}
