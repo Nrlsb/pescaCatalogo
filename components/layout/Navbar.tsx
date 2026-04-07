@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { createClient } from "@/lib/supabase/client";
+import type { Profile } from "@/types/database";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,11 +19,12 @@ export default function Navbar() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: profile } = await supabase
+        const { data } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
           .maybeSingle();
+        const profile = data as Profile | null;
 
         if (profile) {
           setIsAdmin(profile.role === "admin");
