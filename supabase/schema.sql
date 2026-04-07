@@ -213,18 +213,18 @@ CREATE OR REPLACE TRIGGER trg_profiles_updated_at
     BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- Auto-crear profile al registrarse
-CREATE OR REPLACE FUNCTION handle_new_user()
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO profiles (id, full_name)
+    INSERT INTO public.profiles (id, full_name)
     VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name')
     ON CONFLICT (id) DO NOTHING;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 CREATE OR REPLACE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+    AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Auto-generar número de pedido legible
 CREATE OR REPLACE FUNCTION generate_order_number()
@@ -253,77 +253,94 @@ ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE product_variants ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: cada usuario ve/edita solo el suyo
+DROP POLICY IF EXISTS "profiles_own_select" ON profiles;
 CREATE POLICY "profiles_own_select" ON profiles
     FOR SELECT USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "profiles_own_update" ON profiles;
 CREATE POLICY "profiles_own_update" ON profiles
     FOR UPDATE USING (auth.uid() = id);
 
 -- Admin puede ver todos los profiles
+DROP POLICY IF EXISTS "profiles_admin_all" ON profiles;
 CREATE POLICY "profiles_admin_all" ON profiles
     FOR ALL USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
     );
 
 -- Products: lectura pública para productos activos
+DROP POLICY IF EXISTS "products_public_read" ON products;
 CREATE POLICY "products_public_read" ON products
     FOR SELECT USING (is_active = true);
 
 -- Products: admin puede todo
+DROP POLICY IF EXISTS "products_admin_all" ON products;
 CREATE POLICY "products_admin_all" ON products
     FOR ALL USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
     );
 
 -- Categories: lectura pública
+DROP POLICY IF EXISTS "categories_public_read" ON categories;
 CREATE POLICY "categories_public_read" ON categories
     FOR SELECT USING (is_active = true);
 
 -- Categories: admin puede todo
+DROP POLICY IF EXISTS "categories_admin_all" ON categories;
 CREATE POLICY "categories_admin_all" ON categories
     FOR ALL USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
     );
 
 -- Product variants: lectura pública
+DROP POLICY IF EXISTS "variants_public_read" ON product_variants;
 CREATE POLICY "variants_public_read" ON product_variants
     FOR SELECT USING (true);
 
 -- Inventory: lectura pública
+DROP POLICY IF EXISTS "inventory_public_read" ON inventory;
 CREATE POLICY "inventory_public_read" ON inventory
     FOR SELECT USING (true);
 
 -- Inventory: solo admin/staff pueden modificar
+DROP POLICY IF EXISTS "inventory_staff_write" ON inventory;
 CREATE POLICY "inventory_staff_write" ON inventory
     FOR ALL USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))
     );
 
 -- Inventory movements: admin/staff
+DROP POLICY IF EXISTS "movements_staff_all" ON inventory_movements;
 CREATE POLICY "movements_staff_all" ON inventory_movements
     FOR ALL USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))
     );
 
 -- Orders: clientes ven solo los suyos
+DROP POLICY IF EXISTS "orders_own" ON orders;
 CREATE POLICY "orders_own" ON orders
     FOR SELECT USING (customer_id = auth.uid());
 
 -- Orders: admin/staff ven todos
+DROP POLICY IF EXISTS "orders_staff_all" ON orders;
 CREATE POLICY "orders_staff_all" ON orders
     FOR ALL USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))
     );
 
 -- Orders: permite insertar a usuarios autenticados (para checkout)
+DROP POLICY IF EXISTS "orders_insert_auth" ON orders;
 CREATE POLICY "orders_insert_auth" ON orders
     FOR INSERT WITH CHECK (auth.uid() IS NOT NULL OR customer_id IS NULL);
 
 -- Order items: siguen las mismas reglas que orders
+DROP POLICY IF EXISTS "order_items_own" ON order_items;
 CREATE POLICY "order_items_own" ON order_items
     FOR SELECT USING (
         EXISTS (SELECT 1 FROM orders WHERE id = order_id AND customer_id = auth.uid())
     );
 
+DROP POLICY IF EXISTS "order_items_staff_all" ON order_items;
 CREATE POLICY "order_items_staff_all" ON order_items
     FOR ALL USING (
         EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))

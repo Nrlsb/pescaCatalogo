@@ -2,14 +2,35 @@
 
 import Link from "next/link";
 import { ShoppingCart, Fish, Menu, X, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import CartDrawer from "@/components/cart/CartDrawer";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const itemCount = useCartStore((s) => s.itemCount());
+  const [isAdmin, setIsAdmin] = useState(false);
+  const itemCount = useCartStore((s) => s.items.reduce((acc, item) => acc + item.quantity, 0));
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (profile) {
+          setIsAdmin(profile.role === "admin");
+        }
+      }
+    };
+    checkAdmin();
+  }, []);
 
   const navLinks = [
     { href: "/shop", label: "Tienda" },
@@ -40,6 +61,14 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-blue-700 hover:text-blue-800 transition-colors"
+                >
+                  Admin
+                </Link>
+              )}
             </nav>
 
             {/* Actions */}
@@ -88,6 +117,15 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-bold text-blue-700 hover:bg-blue-50"
+                >
+                  Administración
+                </Link>
+              )}
             </div>
           )}
         </div>
