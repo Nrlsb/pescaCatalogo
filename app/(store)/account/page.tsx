@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { formatDate } from "@/lib/formatters";
 import type { Profile, Order } from "@/types/database";
+import LogoutButton from "@/components/auth/LogoutButton";
 
 export default async function AccountPage() {
   const supabase = await createClient();
@@ -46,14 +47,17 @@ export default async function AccountPage() {
           <p className="text-xs text-gray-400 mt-2">
             Miembro desde {formatDate(user.created_at)}
           </p>
-          {profile?.role === "admin" && (
-            <Link
-              href="/admin"
-              className="mt-6 flex items-center justify-center gap-2 w-full bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-800 transition-all shadow-sm hover:shadow-md"
-            >
-              Administrar tienda
-            </Link>
-          )}
+          <div className="mt-6 flex flex-col gap-2">
+            {profile?.role === "admin" && (
+              <Link
+                href="/admin"
+                className="flex items-center justify-center gap-2 w-full bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-800 transition-all shadow-sm hover:shadow-md"
+              >
+                Administrar tienda
+              </Link>
+            )}
+            <LogoutButton />
+          </div>
         </div>
 
         {/* Recent orders */}

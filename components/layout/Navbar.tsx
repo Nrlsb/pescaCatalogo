@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, Fish, Menu, X, User } from "lucide-react";
+import { ShoppingCart, Fish, Menu, X, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import CartDrawer from "@/components/cart/CartDrawer";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
 
@@ -12,27 +13,43 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
   const itemCount = useCartStore((s) => s.items.reduce((acc, item) => acc + item.quantity, 0));
 
   useEffect(() => {
-    const checkAdmin = async () => {
+    const checkUser = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .maybeSingle();
-        const profile = data as Profile | null;
+      setIsLoggedIn(!!user);
 
-        if (profile) {
-          setIsAdmin(profile.role === "admin");
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .maybeSingle();
+
+          if (error) throw error;
+          if (data) {
+            setIsAdmin((data as { role: string }).role === "admin");
+          }
+        } catch (err) {
+          console.error("Error fetching profile:", err);
+          // Si hay error 500 (RLS recursion), al menos no rompemos el render
         }
       }
     };
-    checkAdmin();
+    checkUser();
   }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   const navLinks = [
     { href: "/shop", label: "Tienda" },
@@ -83,6 +100,17 @@ export default function Navbar() {
                 <User size={22} />
               </Link>
 
+              {isLoggedIn && (
+                <button
+                  onClick={handleLogout}
+                  className="hidden sm:flex p-2 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  aria-label="Cerrar sesión"
+                  title="Cerrar sesión"
+                >
+                  <LogOut size={22} />
+                </button>
+              )}
+
               <button
                 onClick={() => setCartOpen(true)}
                 className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
@@ -127,6 +155,18 @@ export default function Navbar() {
                 >
                   Administración
                 </Link>
+              )}
+              {isLoggedIn && (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
+                >
+                  <LogOut size={18} />
+                  <span>Cerrar sesión</span>
+                </button>
               )}
             </div>
           )}
