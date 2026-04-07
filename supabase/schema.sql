@@ -240,6 +240,32 @@ CREATE OR REPLACE TRIGGER trg_order_number
     BEFORE INSERT ON orders FOR EACH ROW EXECUTE FUNCTION generate_order_number();
 
 -- ----------------------------------------------------------------
+-- HELPER FUNCTIONS FOR RLS (To avoid infinite recursion)
+-- ----------------------------------------------------------------
+
+-- Verificar si el usuario es admin
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM public.profiles
+        WHERE id = auth.uid() AND role = 'admin'
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- Verificar si el usuario es staff o admin
+CREATE OR REPLACE FUNCTION public.is_staff_or_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM public.profiles
+        WHERE id = auth.uid() AND role IN ('admin', 'staff')
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- ----------------------------------------------------------------
 -- ROW LEVEL SECURITY
 -- ----------------------------------------------------------------
 
@@ -264,9 +290,7 @@ CREATE POLICY "profiles_own_update" ON profiles
 -- Admin puede ver todos los profiles
 DROP POLICY IF EXISTS "profiles_admin_all" ON profiles;
 CREATE POLICY "profiles_admin_all" ON profiles
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-    );
+    FOR ALL USING (is_admin());
 
 -- Products: lectura pública para productos activos
 DROP POLICY IF EXISTS "products_public_read" ON products;
@@ -276,9 +300,7 @@ CREATE POLICY "products_public_read" ON products
 -- Products: admin puede todo
 DROP POLICY IF EXISTS "products_admin_all" ON products;
 CREATE POLICY "products_admin_all" ON products
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-    );
+    FOR ALL USING (is_admin());
 
 -- Categories: lectura pública
 DROP POLICY IF EXISTS "categories_public_read" ON categories;
@@ -288,9 +310,7 @@ CREATE POLICY "categories_public_read" ON categories
 -- Categories: admin puede todo
 DROP POLICY IF EXISTS "categories_admin_all" ON categories;
 CREATE POLICY "categories_admin_all" ON categories
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
-    );
+    FOR ALL USING (is_admin());
 
 -- Product variants: lectura pública
 DROP POLICY IF EXISTS "variants_public_read" ON product_variants;
@@ -305,16 +325,12 @@ CREATE POLICY "inventory_public_read" ON inventory
 -- Inventory: solo admin/staff pueden modificar
 DROP POLICY IF EXISTS "inventory_staff_write" ON inventory;
 CREATE POLICY "inventory_staff_write" ON inventory
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))
-    );
+    FOR ALL USING (is_staff_or_admin());
 
 -- Inventory movements: admin/staff
 DROP POLICY IF EXISTS "movements_staff_all" ON inventory_movements;
 CREATE POLICY "movements_staff_all" ON inventory_movements
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))
-    );
+    FOR ALL USING (is_staff_or_admin());
 
 -- Orders: clientes ven solo los suyos
 DROP POLICY IF EXISTS "orders_own" ON orders;
@@ -324,9 +340,7 @@ CREATE POLICY "orders_own" ON orders
 -- Orders: admin/staff ven todos
 DROP POLICY IF EXISTS "orders_staff_all" ON orders;
 CREATE POLICY "orders_staff_all" ON orders
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))
-    );
+    FOR ALL USING (is_staff_or_admin());
 
 -- Orders: permite insertar a usuarios autenticados (para checkout)
 DROP POLICY IF EXISTS "orders_insert_auth" ON orders;
@@ -342,9 +356,7 @@ CREATE POLICY "order_items_own" ON order_items
 
 DROP POLICY IF EXISTS "order_items_staff_all" ON order_items;
 CREATE POLICY "order_items_staff_all" ON order_items
-    FOR ALL USING (
-        EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('admin','staff'))
-    );
+    FOR ALL USING (is_staff_or_admin());
 
 -- ----------------------------------------------------------------
 -- DATOS DE EJEMPLO (seed)
