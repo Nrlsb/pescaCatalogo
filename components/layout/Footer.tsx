@@ -3,43 +3,62 @@ import { Fish } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-400 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <div className="flex items-center gap-2 text-white font-bold text-lg mb-3">
-              <Fish size={22} />
+    <footer className="bg-[#0a192f] text-gray-400 mt-auto border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div className="md:col-span-1">
+            <div className="flex items-center gap-2 text-white font-serif text-2xl mb-6">
+              <Fish size={28} className="text-white" />
               <span>PescaShop</span>
             </div>
-            <p className="text-sm">
-              Tu tienda especializada en artículos de pesca. Calidad y variedad
-              para todos los niveles.
+            <p className="text-sm leading-relaxed text-gray-400 max-w-xs">
+              Tu destino premium para equipamiento de pesca. Calidad, tradición y pasión en cada lanzamiento.
             </p>
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-3">Categorías</h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/shop/category/canas" className="hover:text-white transition-colors">Cañas de pesca</Link></li>
-              <li><Link href="/shop/category/sensuelos" className="hover:text-white transition-colors">Señuelos</Link></li>
+            <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-6">Categorías</h3>
+            <ul className="space-y-4 text-sm">
+              <li><Link href="/shop/category/canas" className="hover:text-white transition-colors">Cañas de Pesca</Link></li>
+              <li><Link href="/shop/category/sensuelos" className="hover:text-white transition-colors">Señuelos Premium</Link></li>
               <li><Link href="/shop/category/accesorios" className="hover:text-white transition-colors">Accesorios</Link></li>
-              <li><Link href="/shop/category/lineas" className="hover:text-white transition-colors">Líneas y sedal</Link></li>
+              <li><Link href="/shop/category/lineas" className="hover:text-white transition-colors">Líneas y Sedal</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-white font-semibold mb-3">Mi cuenta</h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/account" className="hover:text-white transition-colors">Mi perfil</Link></li>
-              <li><Link href="/account/orders" className="hover:text-white transition-colors">Mis pedidos</Link></li>
-              <li><Link href="/auth/login" className="hover:text-white transition-colors">Iniciar sesión</Link></li>
-              <li><Link href="/auth/register" className="hover:text-white transition-colors">Registrarse</Link></li>
+            <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-6">Compañía</h3>
+            <ul className="space-y-4 text-sm">
+              <li><Link href="/about" className="hover:text-white transition-colors">Sobre Nosotros</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition-colors">Contacto</Link></li>
+              <li><Link href="/shipping" className="hover:text-white transition-colors">Envíos</Link></li>
+              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacidad</Link></li>
             </ul>
+          </div>
+
+          <div>
+            <h3 className="text-white font-bold text-sm uppercase tracking-widest mb-6">Suscribite</h3>
+            <p className="text-sm text-gray-400 mb-4">Recibí ofertas exclusivas y consejos de pesca.</p>
+            <div className="flex gap-2">
+              <input 
+                type="email" 
+                placeholder="Tu email" 
+                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm w-full focus:outline-none focus:border-primary transition-colors"
+              />
+              <button className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+                Ok
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-6 text-sm text-center">
-          © {new Date().getFullYear()} PescaShop. Todos los derechos reservados.
+        <div className="border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest uppercase">
+          <p>© {new Date().getFullYear()} PescaShop Premium. Todos los derechos reservados.</p>
+          <div className="flex gap-8">
+            <Link href="#" className="hover:text-white transition-colors">Instagram</Link>
+            <Link href="#" className="hover:text-white transition-colors">Facebook</Link>
+            <Link href="#" className="hover:text-white transition-colors">YouTube</Link>
+          </div>
         </div>
       </div>
     </footer>

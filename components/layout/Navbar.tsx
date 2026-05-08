@@ -64,18 +64,18 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 font-black text-2xl tracking-tighter text-primary group transition-all">
-              <Fish size={32} className="group-hover:rotate-12 transition-transform" strokeWidth={2.5} />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">PescaShop</span>
+            <Link href="/" className="flex items-center gap-2 font-serif text-3xl tracking-tight text-primary group transition-all">
+              <Fish size={32} className="group-hover:rotate-12 transition-transform text-primary" strokeWidth={2} />
+              <span>PescaShop</span>
             </Link>
 
             {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-10">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors tracking-tight"
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors tracking-tight uppercase"
                 >
                   {link.label}
                 </Link>
@@ -84,14 +84,14 @@ export default function Navbar() {
                 <div className="flex items-center gap-2">
                   <Link
                     href="/pos"
-                    className="px-4 py-1.5 rounded-full bg-blue-600/10 text-xs font-black uppercase tracking-widest text-blue-600 hover:bg-blue-600/20 transition-all flex items-center gap-1.5"
+                    className="px-4 py-1.5 rounded-full bg-primary/5 text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/10 transition-all flex items-center gap-1.5 border border-primary/20"
                   >
-                    <ShoppingBag size={14} />
+                    <ShoppingBag size={12} />
                     POS
                   </Link>
                   <Link
                     href="/admin"
-                    className="px-4 py-1.5 rounded-full bg-primary/10 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20 transition-all"
+                    className="px-4 py-1.5 rounded-full bg-primary text-[10px] font-bold uppercase tracking-widest text-white hover:opacity-90 transition-all"
                   >
                     Admin
                   </Link>

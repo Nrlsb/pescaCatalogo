@@ -2,6 +2,7 @@ interface BadgeProps {
   children: React.ReactNode;
   color?: "green" | "yellow" | "red" | "blue" | "gray" | "indigo" | "purple" | "orange";
   size?: "sm" | "md";
+  className?: string;
 }
 
 const colors = {
@@ -19,12 +20,13 @@ export default function Badge({
   children,
   color = "gray",
   size = "md",
+  className = "",
 }: BadgeProps) {
   return (
     <span
       className={`inline-flex items-center rounded-lg font-semibold border shadow-sm transition-all ${colors[color]} ${
         size === "sm" ? "px-2 py-0.5 text-[10px] uppercase tracking-wider" : "px-3 py-1 text-xs"
-      }`}
+      } ${className}`}
     >
       {children}
     </span>
