@@ -3,15 +3,17 @@ import { Fish } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0a192f] text-gray-400 mt-auto border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer className="bg-[#0284c7] text-white mt-auto border-t border-white/10 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0284c7] via-[#0ea5e9] to-[#38bdf8] z-0" />
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-1">
-            <div className="flex items-center gap-2 text-white font-serif text-2xl mb-6">
-              <Fish size={28} className="text-white" />
-              <span>PescaShop</span>
+            <div className="flex items-center gap-2 text-white font-serif text-3xl mb-6 drop-shadow-md">
+              <Fish size={32} className="text-[#f43f5e]" strokeWidth={2.5} />
+              <span className="font-bold tracking-tight">PescaShop</span>
             </div>
-            <p className="text-sm leading-relaxed text-gray-400 max-w-xs">
+            <p className="text-sm leading-relaxed text-white/90 max-w-xs font-medium">
               Tu destino premium para equipamiento de pesca. Calidad, tradición y pasión en cada lanzamiento.
             </p>
           </div>
@@ -52,7 +54,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/5 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest uppercase">
+        <div className="border-t border-white/20 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-widest uppercase font-bold text-white/80">
           <p>© {new Date().getFullYear()} PescaShop Premium. Todos los derechos reservados.</p>
           <div className="flex gap-8">
             <Link href="#" className="hover:text-white transition-colors">Instagram</Link>

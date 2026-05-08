@@ -64,9 +64,9 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 font-serif text-3xl tracking-tight text-primary group transition-all">
-              <Fish size={32} className="group-hover:rotate-12 transition-transform text-primary" strokeWidth={2} />
-              <span>PescaShop</span>
+            <Link href="/" className="flex items-center gap-2 font-serif text-3xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#0284c7] to-[#f43f5e] group transition-all drop-shadow-sm">
+              <Fish size={32} className="group-hover:-translate-y-1 transition-transform text-[#f43f5e]" strokeWidth={2.5} />
+              <span className="font-bold">PescaShop</span>
             </Link>
 
             {/* Desktop nav */}
