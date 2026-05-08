@@ -78,6 +78,7 @@ export async function POST(request: Request) {
       reason: "sale_pos",
       reference_id: order.id,
       created_by: user?.id ?? null,
+      notes: "Venta directa (POS)",
     });
   }
 

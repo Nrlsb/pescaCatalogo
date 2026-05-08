@@ -29,12 +29,20 @@ export default async function InventoryPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Inventario</h1>
-        <Link
-          href="/admin/inventory/adjust"
-          className="inline-flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors"
-        >
-          Ajuste manual
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/inventory/movements"
+            className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            Ver historial
+          </Link>
+          <Link
+            href="/admin/inventory/adjust"
+            className="inline-flex items-center gap-2 bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors"
+          >
+            Ajuste manual
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
