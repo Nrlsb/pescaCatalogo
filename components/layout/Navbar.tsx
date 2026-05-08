@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, Fish, Menu, X, User, LogOut } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Fish, Menu, X, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import CartDrawer from "@/components/cart/CartDrawer";
@@ -81,12 +81,21 @@ export default function Navbar() {
                 </Link>
               ))}
               {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="px-4 py-1.5 rounded-full bg-primary/10 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20 transition-all"
-                >
-                  Admin
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/pos"
+                    className="px-4 py-1.5 rounded-full bg-blue-600/10 text-xs font-black uppercase tracking-widest text-blue-600 hover:bg-blue-600/20 transition-all flex items-center gap-1.5"
+                  >
+                    <ShoppingBag size={14} />
+                    POS
+                  </Link>
+                  <Link
+                    href="/admin"
+                    className="px-4 py-1.5 rounded-full bg-primary/10 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20 transition-all"
+                  >
+                    Admin
+                  </Link>
+                </div>
               )}
             </nav>
 
@@ -148,13 +157,23 @@ export default function Navbar() {
                 </Link>
               ))}
               {isAdmin && (
-                <Link
-                  href="/admin"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-primary bg-primary/5"
-                >
-                  Administración
-                </Link>
+                <>
+                  <Link
+                    href="/pos"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-blue-600 bg-blue-600/5 mb-2"
+                  >
+                    <ShoppingBag size={18} />
+                    <span>Punto de Venta</span>
+                  </Link>
+                  <Link
+                    href="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-primary bg-primary/5"
+                  >
+                    Administración
+                  </Link>
+                </>
               )}
               {isLoggedIn && (
                 <button
