@@ -21,19 +21,19 @@ export default function Home() {
               style={{ animationDuration: '1.5s' }}
               priority
             />
-            {/* Vibrant sunrise overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0284c7]/80 via-[#38bdf8]/40 to-[#f97316]/20 mix-blend-multiply" />
+            {/* Vibrant overlay replaced with classic blue */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0f172a]/90 via-[#1e3a8a]/60 to-[#0ea5e9]/30 mix-blend-multiply" />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
           </div>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 w-full">
             <div className="max-w-3xl animate-in" style={{ animationDelay: '0.2s', opacity: 0, animationFillMode: 'forwards' }}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 text-white text-sm font-semibold tracking-widest uppercase border-white/40 shadow-lg shadow-white/10">
-                <Sun size={16} className="text-[#f97316]" />
+                <Sun size={16} className="text-[#38bdf8]" />
                 <span>Nueva Temporada de Pesca</span>
               </div>
               <h1 className="text-6xl md:text-8xl font-serif text-white mb-6 leading-[1.1] drop-shadow-lg">
-                Siente la <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#f97316]">Aventura</span>
+                Siente la <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#38bdf8]">Aventura</span>
               </h1>
               <p className="text-xl md:text-2xl text-white/95 mb-10 max-w-xl font-sans drop-shadow font-medium leading-relaxed">
                 Equipamiento vibrante y dinámico para quienes viven el mar. La mejor tecnología en cada lanzamiento.
@@ -66,29 +66,29 @@ export default function Home() {
         </section>
 
         {/* Features Bar */}
-        <section className="py-12 bg-white relative z-20 -mt-10 mx-4 md:mx-auto max-w-6xl rounded-3xl shadow-premium border border-border">
+        <section className="py-12 bg-card relative z-20 -mt-10 mx-4 md:mx-auto max-w-6xl rounded-3xl shadow-premium border border-border">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-8">
             {[
               {
                 icon: Truck,
                 title: "Envío Rápido",
                 desc: "Despachos express a todo el país",
-                color: "text-[#0284c7]",
-                bg: "bg-[#e0f2fe]"
+                color: "text-blue-500",
+                bg: "bg-blue-500/10"
               },
               {
                 icon: Shield,
                 title: "Calidad Premium",
                 desc: "Garantía en todos los productos",
-                color: "text-[#f43f5e]",
-                bg: "bg-[#ffe4e6]"
+                color: "text-emerald-500",
+                bg: "bg-emerald-500/10"
               },
               {
                 icon: Fish,
                 title: "Asesoría Activa",
                 desc: "Expertos listos para ayudarte",
-                color: "text-[#f97316]",
-                bg: "bg-[#ffedd5]"
+                color: "text-orange-500",
+                bg: "bg-orange-500/10"
               },
             ].map(({ icon: Icon, title, desc, color, bg }, idx) => (
               <div key={title} className="flex items-center gap-5 group animate-in" style={{ animationDelay: `${0.3 + idx * 0.1}s`, opacity: 0, animationFillMode: 'forwards' }}>
@@ -129,8 +129,8 @@ export default function Home() {
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
-                  {/* Vibrant gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0284c7]/90 via-[#0284c7]/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+                  {/* Blue gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/90 via-[#1e3a8a]/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
                   
                   <div className="absolute bottom-0 left-0 p-8 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     <h3 className="text-3xl font-serif text-white mb-2 drop-shadow-md">{cat.name}</h3>
@@ -146,19 +146,19 @@ export default function Home() {
         </section>
 
         {/* Brand Story / About */}
-        <section className="py-32 px-4 bg-sunrise text-white overflow-hidden relative">
+        <section className="py-32 px-4 bg-ocean-gradient text-white overflow-hidden relative">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('/images/pattern.svg')] opacity-10" />
           <div className="absolute -top-[20%] -right-[10%] w-[50%] h-[150%] bg-white/10 blur-[100px] rounded-full" />
           
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <Fish size={64} className="mx-auto mb-8 text-white/80 animate-float" />
-            <h2 className="text-5xl md:text-7xl font-serif mb-8 drop-shadow-sm">Pasión Vibrante</h2>
+            <h2 className="text-5xl md:text-7xl font-serif mb-8 drop-shadow-sm">Pasión por el Mar</h2>
             <p className="text-2xl text-white/95 mb-12 leading-relaxed font-sans font-medium max-w-3xl mx-auto">
-              Nacimos con la energía del primer rayo de sol sobre el agua. No solo vendemos equipo, compartimos la emoción y la adrenalina de cada captura.
+              Nacimos con la energía del océano. No solo vendemos equipo, compartimos la emoción y la adrenalina de cada captura.
             </p>
             <Link
               href="/about"
-              className="inline-flex items-center gap-3 bg-white text-[#f43f5e] px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-xl hover:shadow-2xl"
+              className="inline-flex items-center gap-3 bg-white text-[#1e3a8a] px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-xl hover:shadow-2xl"
             >
               Nuestra Historia <ArrowRight size={20} />
             </Link>

@@ -4,11 +4,11 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
   
-  --color-primary: #0284c7; /* Ocean Blue */
+  --color-primary: #1e3a8a; /* Deep Navy Blue */
   --color-primary-foreground: #ffffff;
   
-  --color-accent-coral: #f43f5e; /* Vibrant Coral */
-  --color-sunrise: #f97316; /* Sunrise Orange */
+  --color-accent-coral: #0ea5e9; /* Bright Light Blue */
+  --color-sunrise: #38bdf8; /* Sky Blue */
   
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
@@ -25,17 +25,17 @@
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #0284c7;
+  --primary: #1e3a8a;
   --primary-foreground: #ffffff;
   --secondary: #f0f9ff;
-  --secondary-foreground: #0284c7;
+  --secondary-foreground: #1e3a8a;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #f43f5e;
+  --accent: #0ea5e9;
   --accent-foreground: #ffffff;
   --border: #e0f2fe;
   --input: #e2e8f0;
-  --ring: #0284c7;
+  --ring: #1e3a8a;
   
   --footer-bg: #f8fafc;
   --footer-foreground: #334155;
@@ -55,8 +55,8 @@
     --secondary-foreground: #38bdf8;
     --muted: #334155;
     --muted-foreground: #94a3b8;
-    --accent: #fb7185;
-    --accent-foreground: #0f172a;
+    --accent: #0ea5e9;
+    --accent-foreground: #ffffff;
     --border: #334155;
     --input: #334155;
     --ring: #38bdf8;
@@ -109,12 +109,12 @@ h1, h2, h3, h4, .font-serif {
   animation: float 6s ease-in-out infinite;
 }
 
-/* Sunrise Gradients */
-.bg-sunrise {
-  background: linear-gradient(135deg, #0284c7 0%, #38bdf8 50%, #f43f5e 100%);
+/* Ocean Gradients */
+.bg-ocean-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0ea5e9 100%);
 }
-.text-sunrise {
-  background: linear-gradient(135deg, #0284c7 0%, #f43f5e 100%);
+.text-ocean-gradient {
+  background: linear-gradient(135deg, #1e3a8a 0%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -122,7 +122,7 @@ h1, h2, h3, h4, .font-serif {
 
 /* Premium Button Gradient */
 .btn-premium {
-  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  background: linear-gradient(135deg, #1e3a8a, #0ea5e9);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -150,11 +150,11 @@ h1, h2, h3, h4, .font-serif {
 }
 
 .btn-accent {
-  background: linear-gradient(135deg, #f43f5e, #fb7185);
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn-accent:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -10px rgba(244, 63, 94, 0.5);
+  box-shadow: 0 10px 20px -10px rgba(14, 165, 233, 0.5);
 }
 

@@ -3,14 +3,14 @@ import { Fish } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0284c7] text-white mt-auto border-t border-white/10 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0284c7] via-[#0ea5e9] to-[#38bdf8] z-0" />
+    <footer className="bg-[#0f172a] text-white mt-auto border-t border-white/10 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#0ea5e9] z-0" />
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 text-white font-serif text-3xl mb-6 drop-shadow-md">
-              <Fish size={32} className="text-[#f43f5e]" strokeWidth={2.5} />
+              <Fish size={32} className="text-[#38bdf8]" strokeWidth={2.5} />
               <span className="font-bold tracking-tight">PescaShop</span>
             </div>
             <p className="text-sm leading-relaxed text-white/90 max-w-xs font-medium">
