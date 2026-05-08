@@ -60,22 +60,22 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-blue-700">
-              <Fish size={28} />
-              <span>PescaShop</span>
+            <Link href="/" className="flex items-center gap-2 font-black text-2xl tracking-tighter text-primary group transition-all">
+              <Fish size={32} className="group-hover:rotate-12 transition-transform" strokeWidth={2.5} />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">PescaShop</span>
             </Link>
 
             {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-gray-600 hover:text-blue-700 transition-colors"
+                  className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors tracking-tight"
                 >
                   {link.label}
                 </Link>
@@ -83,7 +83,7 @@ export default function Navbar() {
               {isAdmin && (
                 <Link
                   href="/admin"
-                  className="text-sm font-medium text-blue-700 hover:text-blue-800 transition-colors"
+                  className="px-4 py-1.5 rounded-full bg-primary/10 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20 transition-all"
                 >
                   Admin
                 </Link>
@@ -91,34 +91,34 @@ export default function Navbar() {
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Link
                 href="/account"
-                className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                className="p-2.5 rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
                 aria-label="Mi cuenta"
               >
-                <User size={22} />
+                <User size={22} strokeWidth={2} />
               </Link>
 
               {isLoggedIn && (
                 <button
                   onClick={handleLogout}
-                  className="hidden sm:flex p-2 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  className="hidden sm:flex p-2.5 rounded-xl text-muted-foreground hover:bg-rose-500/10 hover:text-rose-500 transition-all"
                   aria-label="Cerrar sesión"
                   title="Cerrar sesión"
                 >
-                  <LogOut size={22} />
+                  <LogOut size={22} strokeWidth={2} />
                 </button>
               )}
 
               <button
                 onClick={() => setCartOpen(true)}
-                className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                className="relative p-2.5 rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
                 aria-label="Carrito"
               >
-                <ShoppingCart size={22} />
+                <ShoppingCart size={22} strokeWidth={2.5} />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-blue-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-black ring-2 ring-background">
                     {itemCount > 99 ? "99+" : itemCount}
                   </span>
                 )}
@@ -127,7 +127,7 @@ export default function Navbar() {
               {/* Mobile menu button */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+                className="md:hidden p-2.5 rounded-xl text-muted-foreground hover:bg-secondary"
               >
                 {menuOpen ? <X size={22} /> : <Menu size={22} />}
               </button>
@@ -136,13 +136,13 @@ export default function Navbar() {
 
           {/* Mobile menu */}
           {menuOpen && (
-            <div className="md:hidden border-t border-gray-100 py-3 space-y-1">
+            <div className="md:hidden border-t border-border py-4 space-y-2 animate-in">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  className="block px-4 py-3 rounded-xl text-sm font-bold text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
                 >
                   {link.label}
                 </Link>
@@ -151,7 +151,7 @@ export default function Navbar() {
                 <Link
                   href="/admin"
                   onClick={() => setMenuOpen(false)}
-                  className="block px-3 py-2 rounded-lg text-sm font-bold text-blue-700 hover:bg-blue-50"
+                  className="block px-4 py-3 rounded-xl text-sm font-black uppercase tracking-widest text-primary bg-primary/5"
                 >
                   Administración
                 </Link>
@@ -162,7 +162,7 @@ export default function Navbar() {
                     handleLogout();
                     setMenuOpen(false);
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-500 hover:bg-rose-500/10 transition-all"
                 >
                   <LogOut size={18} />
                   <span>Cerrar sesión</span>
@@ -172,6 +172,7 @@ export default function Navbar() {
           )}
         </div>
       </header>
+
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>

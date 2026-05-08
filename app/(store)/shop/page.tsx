@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/shop/ProductCard";
+import Badge from "@/components/ui/Badge";
 import type { Category, Product } from "@/types/database";
 
 interface PageProps {
@@ -50,14 +51,20 @@ export default async function ShopPage({ searchParams }: PageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar filters */}
-        <aside className="w-full md:w-56 flex-shrink-0">
-          <div className="bg-white border border-gray-200 rounded-xl p-5 sticky top-20">
-            <h2 className="font-semibold text-gray-900 mb-4">Categorías</h2>
-            <ul className="space-y-2">
+        <aside className="w-full md:w-64 flex-shrink-0">
+          <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 sticky top-24 shadow-sm">
+            <h2 className="text-lg font-black tracking-tight mb-6 flex items-center gap-2">
+              Categorías
+            </h2>
+            <ul className="space-y-1">
               <li>
                 <a
                   href="/shop"
-                  className="text-sm text-gray-600 hover:text-blue-700 transition-colors"
+                  className={`block px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                    !params.category 
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  }`}
                 >
                   Todos los productos
                 </a>
@@ -66,7 +73,11 @@ export default async function ShopPage({ searchParams }: PageProps) {
                 <li key={cat.id}>
                   <a
                     href={`/shop/category/${cat.slug}`}
-                    className="text-sm text-gray-600 hover:text-blue-700 transition-colors"
+                    className={`block px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                      params.category === cat.slug
+                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
                   >
                     {cat.name}
                   </a>
@@ -74,9 +85,11 @@ export default async function ShopPage({ searchParams }: PageProps) {
               ))}
             </ul>
 
-            <div className="mt-6 pt-5 border-t">
-              <h3 className="font-semibold text-gray-900 mb-3 text-sm">Ordenar por</h3>
-              <div className="space-y-2">
+            <div className="mt-8 pt-6 border-t border-border">
+              <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">
+                Ordenar por
+              </h3>
+              <div className="space-y-1">
                 {[
                   { value: "", label: "Más recientes" },
                   { value: "price_asc", label: "Precio: menor a mayor" },
@@ -85,10 +98,10 @@ export default async function ShopPage({ searchParams }: PageProps) {
                   <a
                     key={opt.value}
                     href={`/shop?${new URLSearchParams({ ...params, sort: opt.value })}`}
-                    className={`block text-sm px-3 py-1.5 rounded-lg transition-colors ${
+                    className={`block px-3 py-2 rounded-xl text-sm font-medium transition-all ${
                       (params.sort ?? "") === opt.value
-                        ? "bg-blue-100 text-blue-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-100"
+                        ? "bg-secondary text-primary font-bold"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                     }`}
                   >
                     {opt.label}
@@ -100,40 +113,41 @@ export default async function ShopPage({ searchParams }: PageProps) {
         </aside>
 
         {/* Products */}
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {params.q ? `Resultados para "${params.q}"` : "Todos los productos"}
+        <div className="flex-1 space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h1 className="text-3xl font-black tracking-tight text-foreground">
+              {params.q ? `Resultados para "${params.q}"` : "Explorar Tienda"}
             </h1>
-            <p className="text-sm text-gray-500">
+            <Badge color="blue" size="md">
               {products?.length ?? 0} productos
-            </p>
+            </Badge>
           </div>
 
           {/* Search bar */}
-          <form method="get" action="/shop" className="mb-6">
+          <form method="get" action="/shop" className="group">
             <div className="relative">
               <input
                 type="text"
                 name="q"
                 defaultValue={params.q}
-                placeholder="Buscar productos..."
-                className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Buscar por nombre, marca o categoría..."
+                className="w-full bg-card border-2 border-border rounded-2xl pl-12 pr-4 py-4 text-sm font-medium focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
               />
               <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                width="16"
-                height="16"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.5"
               >
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
             </div>
           </form>
+
 
           {products && products.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

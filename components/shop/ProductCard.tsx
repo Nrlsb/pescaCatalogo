@@ -31,37 +31,37 @@ export default function ProductCard({ product }: ProductCardProps) {
   const isLowStock = product.stock_status === "low_stock";
 
   return (
-    <Link href={`/shop/${product.slug}`} className="group block">
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+    <Link href={`/shop/${product.slug}`} className="group block h-full">
+      <div className="flex flex-col h-full bg-card text-card-foreground rounded-2xl border border-border overflow-hidden hover:shadow-premium transition-all duration-300 hover:-translate-y-1">
         {/* Image */}
-        <div className="relative h-52 bg-gray-100">
+        <div className="relative aspect-[4/3] bg-slate-50 dark:bg-slate-900/50">
           {product.images[0] ? (
             <Image
               src={product.images[0]}
               alt={product.name}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="h-full w-full flex items-center justify-center text-gray-400 text-sm">
+            <div className="h-full w-full flex items-center justify-center text-muted-foreground text-xs uppercase tracking-widest font-bold">
               Sin imagen
             </div>
           )}
           {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
             {product.is_featured && (
-              <Badge color="blue">Destacado</Badge>
+              <Badge color="blue" size="sm">Destacado</Badge>
             )}
             {isLowStock && !isOutOfStock && (
-              <Badge color="yellow">Últimas unidades</Badge>
+              <Badge color="yellow" size="sm">¡Últimas!</Badge>
             )}
             {isOutOfStock && (
-              <Badge color="red">Sin stock</Badge>
+              <Badge color="red" size="sm">Sin stock</Badge>
             )}
           </div>
           {product.compare_at_price && product.compare_at_price > product.price && (
-            <div className="absolute top-2 right-2">
-              <Badge color="orange">
+            <div className="absolute top-3 right-3">
+              <Badge color="orange" size="sm">
                 -{Math.round((1 - product.price / product.compare_at_price) * 100)}%
               </Badge>
             </div>
@@ -69,39 +69,40 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Info */}
-        <div className="p-4">
+        <div className="p-5 flex flex-col flex-1 gap-2">
           {product.brand && (
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+            <p className="text-[10px] text-primary font-black uppercase tracking-widest">
               {product.brand}
             </p>
           )}
-          <h3 className="font-medium text-gray-900 text-sm line-clamp-2 mb-2">
+          <h3 className="font-bold text-foreground text-sm line-clamp-2 leading-tight flex-1">
             {product.name}
           </h3>
 
-          <div className="flex items-center justify-between mt-3">
-            <div>
-              <span className="text-base font-bold text-gray-900">
-                {formatCurrency(product.price)}
-              </span>
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col">
               {product.compare_at_price && product.compare_at_price > product.price && (
-                <span className="text-xs text-gray-400 line-through ml-2">
+                <span className="text-xs text-muted-foreground line-through decoration-rose-500/30">
                   {formatCurrency(product.compare_at_price)}
                 </span>
               )}
+              <span className="text-lg font-black text-foreground">
+                {formatCurrency(product.price)}
+              </span>
             </div>
 
             <button
               onClick={handleAddToCart}
               disabled={isOutOfStock}
-              className="p-2 rounded-lg bg-blue-700 text-white hover:bg-blue-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md shadow-primary/20 disabled:opacity-30 active:scale-95"
               aria-label="Agregar al carrito"
             >
-              <ShoppingCart size={18} />
+              <ShoppingCart size={18} strokeWidth={2.5} />
             </button>
           </div>
         </div>
       </div>
     </Link>
+
   );
 }
