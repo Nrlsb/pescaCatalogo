@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { usePosStore } from "@/store/posStore";
 import { formatCurrency } from "@/lib/formatters";
 import { createClient } from "@/lib/supabase/client";
-import { Search, Trash2, ShoppingBag, Plus, Minus, Check, CreditCard, Banknote, Landmark, ScanBarcode } from "lucide-react";
+import { Search, Trash2, ShoppingBag, Plus, Minus, Check, CreditCard, Banknote, Landmark, ScanBarcode, ArrowLeft } from "lucide-react";
 import type { Product, Category } from "@/types/database";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
@@ -166,6 +167,13 @@ export default function POSPage() {
         {/* Sub Header / Filters */}
         <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-4 shadow-sm z-10">
           <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <Link 
+              href="/" 
+              className="p-2.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 transition-all"
+              title="Volver a la tienda"
+            >
+              <ArrowLeft size={22} strokeWidth={2.5} />
+            </Link>
             <div className="relative flex-1 w-full">
               <Search
                 size={18}
