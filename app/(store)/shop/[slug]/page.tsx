@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { formatCurrency } from "@/lib/formatters";
 import AddToCartButton from "@/components/shop/AddToCartButton";
+import ProductGallery from "@/components/shop/ProductGallery";
 import Badge from "@/components/ui/Badge";
 import type { Metadata } from "next";
 import type { Product, ProductVariant } from "@/types/database";
@@ -61,35 +62,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-in">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         {/* Images */}
-        <div className="space-y-4">
-          <div className="relative aspect-square bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-premium group">
-            {product.images[0] ? (
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
-                priority
-              />
-            ) : (
-              <div className="h-full flex items-center justify-center text-slate-400">
-                Sin imagen
-              </div>
-            )}
-          </div>
-          {product.images.length > 1 && (
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {product.images.map((img, i) => (
-                <div 
-                  key={i} 
-                  className="relative h-24 w-24 flex-shrink-0 bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-primary transition-colors cursor-pointer shadow-sm"
-                >
-                  <Image src={img} alt={`${product.name} ${i + 1}`} fill className="object-cover p-2" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductGallery images={product.images} name={product.name} />
 
         {/* Info */}
         <div className="space-y-8 lg:pl-4">
