@@ -58,30 +58,33 @@ export default async function ProductDetailPage({ params }: PageProps) {
       : "in_stock";
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-in">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         {/* Images */}
-        <div className="space-y-3">
-          <div className="relative h-96 bg-gray-100 rounded-xl overflow-hidden">
+        <div className="space-y-4">
+          <div className="relative aspect-square bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-premium group">
             {product.images[0] ? (
               <Image
                 src={product.images[0]}
                 alt={product.name}
                 fill
-                className="object-contain"
+                className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
                 priority
               />
             ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">
+              <div className="h-full flex items-center justify-center text-slate-400">
                 Sin imagen
               </div>
             )}
           </div>
           {product.images.length > 1 && (
-            <div className="flex gap-2">
-              {product.images.slice(1).map((img, i) => (
-                <div key={i} className="relative h-20 w-20 bg-gray-100 rounded-lg overflow-hidden">
-                  <Image src={img} alt={`${product.name} ${i + 2}`} fill className="object-cover" />
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {product.images.map((img, i) => (
+                <div 
+                  key={i} 
+                  className="relative h-24 w-24 flex-shrink-0 bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-primary transition-colors cursor-pointer shadow-sm"
+                >
+                  <Image src={img} alt={`${product.name} ${i + 1}`} fill className="object-cover p-2" />
                 </div>
               ))}
             </div>
@@ -89,64 +92,79 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
 
         {/* Info */}
-        <div className="space-y-5">
-          {product.brand && (
-            <p className="text-sm text-gray-500 uppercase tracking-wide font-medium">
-              {product.brand}
-            </p>
-          )}
-          <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-
-          <div className="flex items-center gap-3">
-            <span className="text-3xl font-bold text-gray-900">
-              {formatCurrency(product.price)}
-            </span>
-            {product.compare_at_price && product.compare_at_price > product.price && (
-              <>
-                <span className="text-xl text-gray-400 line-through">
-                  {formatCurrency(product.compare_at_price)}
-                </span>
-                <Badge color="orange">
-                  -{Math.round((1 - product.price / product.compare_at_price) * 100)}% OFF
-                </Badge>
-              </>
+        <div className="space-y-8 lg:pl-4">
+          <div className="space-y-4">
+            {product.brand && (
+              <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest rounded-full">
+                {product.brand}
+              </span>
             )}
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+              {product.name}
+            </h1>
+
+            <div className="flex items-baseline gap-4">
+              <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 dark:from-blue-400 dark:to-cyan-300">
+                {formatCurrency(product.price)}
+              </span>
+              {product.compare_at_price && product.compare_at_price > product.price && (
+                <>
+                  <span className="text-2xl text-slate-400 line-through decoration-red-500/50">
+                    {formatCurrency(product.compare_at_price)}
+                  </span>
+                  <Badge color="orange" size="md">
+                    -{Math.round((1 - product.price / product.compare_at_price) * 100)}% OFF
+                  </Badge>
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Stock */}
-          <div>
-            {stockStatus === "in_stock" && (
-              <Badge color="green">En stock ({totalStock} disponibles)</Badge>
-            )}
-            {stockStatus === "low_stock" && (
-              <Badge color="yellow">Últimas {totalStock} unidades</Badge>
-            )}
-            {stockStatus === "out_of_stock" && (
-              <Badge color="red">Sin stock</Badge>
+          <div className="flex flex-wrap items-center gap-4 py-4 border-y border-slate-100 dark:border-slate-800">
+            {/* Stock Status */}
+            <div>
+              {stockStatus === "in_stock" && (
+                <Badge color="green">En stock ({totalStock} disponibles)</Badge>
+              )}
+              {stockStatus === "low_stock" && (
+                <Badge color="yellow">Últimas {totalStock} unidades</Badge>
+              )}
+              {stockStatus === "out_of_stock" && (
+                <Badge color="red">Sin stock</Badge>
+              )}
+            </div>
+            
+            {product.sku && (
+              <span className="text-sm font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                SKU: {product.sku}
+              </span>
             )}
           </div>
-
-          {product.sku && (
-            <p className="text-sm text-gray-500">SKU: {product.sku}</p>
-          )}
 
           {product.description && (
-            <p className="text-gray-600 leading-relaxed">{product.description}</p>
+            <div className="prose prose-slate dark:prose-invert max-w-none">
+              <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                {product.description}
+              </p>
+            </div>
           )}
 
-          <AddToCartButton
-            product={{
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              image: product.images[0],
-              sku: product.sku,
-            }}
-            variants={product.product_variants ?? []}
-            outOfStock={stockStatus === "out_of_stock"}
-          />
+          <div className="pt-4">
+            <AddToCartButton
+              product={{
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images[0],
+                sku: product.sku,
+              }}
+              variants={product.product_variants ?? []}
+              outOfStock={stockStatus === "out_of_stock"}
+            />
+          </div>
         </div>
       </div>
     </div>
+
   );
 }

@@ -51,22 +51,24 @@ export default function AddToCartButton({ product, variants, outOfStock }: Props
   return (
     <div className="space-y-4">
       {variants.length > 0 && (
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-2">Variante:</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="animate-in" style={{ animationDelay: '100ms' }}>
+          <p className="text-sm font-bold text-slate-900 dark:text-slate-200 mb-3 flex items-center gap-2">
+            Seleccionar Variante
+          </p>
+          <div className="flex flex-wrap gap-3">
             {variants.map((v) => (
               <button
                 key={v.id}
                 onClick={() => setSelectedVariant(v.id)}
-                className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                className={`px-5 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all duration-200 ${
                   selectedVariant === v.id
-                    ? "border-blue-700 bg-blue-50 text-blue-700"
-                    : "border-gray-300 text-gray-700 hover:border-gray-400"
+                    ? "border-primary bg-primary/5 text-primary shadow-sm"
+                    : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700"
                 }`}
               >
                 {v.name}
                 {v.price_delta !== 0 && (
-                  <span className="ml-1 text-xs text-gray-500">
+                  <span className={`ml-2 text-xs ${selectedVariant === v.id ? "text-primary/70" : "text-slate-400"}`}>
                     ({v.price_delta > 0 ? "+" : ""}{v.price_delta})
                   </span>
                 )}
@@ -74,29 +76,33 @@ export default function AddToCartButton({ product, variants, outOfStock }: Props
             ))}
           </div>
           {variants.length > 0 && !selectedVariant && (
-            <p className="text-xs text-red-500 mt-1">Seleccioná una variante</p>
+            <p className="text-xs text-rose-500 font-medium mt-2 flex items-center gap-1">
+              <span className="w-1 h-1 bg-rose-500 rounded-full animate-pulse" />
+              Por favor, seleccioná una variante
+            </p>
           )}
         </div>
       )}
 
-      <div className="flex items-center gap-3">
-        <div className="flex items-center border border-gray-300 rounded-lg">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
+        <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-lg transition-colors"
+            className="w-10 h-10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all shadow-sm active:scale-95"
           >
             -
           </button>
-          <span className="px-4 py-2 font-medium text-gray-800 min-w-[3rem] text-center">
+          <span className="flex-1 px-4 font-bold text-slate-900 dark:text-white text-center min-w-[3rem]">
             {quantity}
           </span>
           <button
             onClick={() => setQuantity(quantity + 1)}
-            className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-lg transition-colors"
+            className="w-10 h-10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all shadow-sm active:scale-95"
           >
             +
           </button>
         </div>
+
 
         <Button
           onClick={handleAdd}
