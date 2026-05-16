@@ -17,6 +17,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [newBudget, setNewBudget] = useState({
     customerName: "",
     customerEmail: "",
@@ -87,6 +88,19 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
     }, 0);
   };
 
+  const filteredBudgets = initialBudgets.filter(budget => {
+    const searchLower = searchTerm.toLowerCase();
+    const orderNum = budget.order_number.toLowerCase();
+    const name = (budget.shipping_name || "").toLowerCase();
+    const email = (budget.shipping_email || "").toLowerCase();
+    const ref = orderNum.replace("ord-", "pre-");
+    
+    return orderNum.includes(searchLower) || 
+           name.includes(searchLower) || 
+           email.includes(searchLower) ||
+           ref.includes(searchLower);
+  });
+
   return (
     <div className="p-8 min-h-screen bg-gray-50 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
@@ -112,6 +126,8 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
             type="text" 
             placeholder="Buscar por cliente, email o # presupuesto..." 
             className="w-full bg-white border border-slate-200 rounded-3xl pl-14 pr-6 py-5 text-sm text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all shadow-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="bg-white border border-slate-200 rounded-3xl p-1 flex items-center shadow-sm">
@@ -143,7 +159,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {initialBudgets.map((budget) => (
+              {filteredBudgets.map((budget) => (
                 <tr key={budget.id} className="group hover:bg-blue-50/30 transition-all cursor-default">
                   <td className="px-8 py-6">
                     <span className="font-mono font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg text-xs">
@@ -172,13 +188,24 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button title="Descargar PDF" className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+                      <button 
+                        title="Descargar PDF" 
+                        onClick={() => alert("Generando PDF de " + budget.order_number.replace("ORD-", "PRE-") + "...")}
+                        className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                      >
                         <FileDown size={18} />
                       </button>
-                      <button title="Enviar por Email" className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+                      <button 
+                        title="Enviar por Email" 
+                        onClick={() => alert("Enviando presupuesto a " + (budget.shipping_email || "cliente") + "...")}
+                        className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                      >
                         <Mail size={18} />
                       </button>
-                      <button className="flex items-center gap-1 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-blue-600 transition-all ml-2">
+                      <button 
+                        onClick={() => router.push(`/admin/orders/${budget.id}`)}
+                        className="flex items-center gap-1 px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-blue-600 transition-all ml-2"
+                      >
                         Ver <ArrowRight size={14} />
                       </button>
                     </div>
@@ -188,7 +215,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
             </tbody>
           </table>
         </div>
-        {initialBudgets.length === 0 && (
+        {filteredBudgets.length === 0 && (
           <div className="text-center py-24 text-slate-400 bg-slate-50/50">
             <div className="bg-white w-20 h-20 rounded-3xl shadow-sm flex items-center justify-center mx-auto mb-6">
               <FileText size={32} className="text-slate-200" />
