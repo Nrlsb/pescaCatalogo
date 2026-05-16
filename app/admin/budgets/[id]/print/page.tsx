@@ -131,13 +131,37 @@ export default async function BudgetPrintPage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* Styles to hide admin sidebar on screen and print */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          /* Hide sidebar on both screen and print for this route */
+          aside {
+            display: none !important;
+          }
+          main {
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .min-h-screen {
+            min-height: auto !important;
+          }
+          @media print {
+            body, html {
+              background: white !important;
+            }
+            @page {
+              margin: 1.5cm;
+            }
+          }
+        `
+      }} />
+
       {/* Script to trigger browser print automatically and close page */}
       <script dangerouslySetInnerHTML={{
         __html: `
           window.onload = function() {
             window.print();
-            // Optional: close the window after printing or cancellation.
-            // Some browsers require a user interaction to close, but let's try.
             setTimeout(() => {
               window.close();
             }, 500);
