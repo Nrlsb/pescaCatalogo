@@ -17,7 +17,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
   const [newBudget, setNewBudget] = useState({
     customerName: "",
     customerEmail: "",
-    items: [{ productId: "", quantity: 1 }]
+    items: [{ productId: "", quantity: 1, customPrice: 0 }]
   });
 
   const handleCreateBudget = () => {
@@ -26,7 +26,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
     setNewBudget({
       customerName: "",
       customerEmail: "",
-      items: [{ productId: "", quantity: 1 }]
+      items: [{ productId: "", quantity: 1, customPrice: 0 }]
     });
     alert("Presupuesto creado exitosamente (Simulado)");
   };
@@ -34,7 +34,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
   const addItem = () => {
     setNewBudget({
       ...newBudget,
-      items: [...newBudget.items, { productId: "", quantity: 1 }]
+      items: [...newBudget.items, { productId: "", quantity: 1, customPrice: 0 }]
     });
   };
 
@@ -46,14 +46,21 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
 
   const updateItem = (index: number, field: string, value: any) => {
     const newItems = [...newBudget.items];
-    newItems[index] = { ...newItems[index], [field]: value };
+    const item = { ...newItems[index], [field]: value };
+    
+    // Si cambia el producto, actualizamos el precio base automáticamente
+    if (field === 'productId') {
+      const product = products.find(p => p.id === value);
+      item.customPrice = product?.price || 0;
+    }
+    
+    newItems[index] = item;
     setNewBudget({ ...newBudget, items: newItems });
   };
 
   const calculateTotal = () => {
     return newBudget.items.reduce((acc, item) => {
-      const product = products.find(p => p.id === item.productId);
-      return acc + (product?.price || 0) * item.quantity;
+      return acc + (item.customPrice || 0) * item.quantity;
     }, 0);
   };
 
@@ -221,7 +228,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
             <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
               {newBudget.items.map((item, index) => (
                 <div key={index} className="group/item flex gap-3 items-start bg-white border border-slate-100 p-2.5 rounded-[24px] shadow-sm hover:border-blue-200 hover:shadow-premium transition-all duration-300">
-                  <div className="flex-[4]">
+                  <div className="flex-[3]">
                     <select 
                       className="w-full bg-transparent border-none rounded-xl px-4 py-3 text-sm focus:outline-none cursor-pointer font-bold text-slate-700"
                       value={item.productId}
@@ -229,11 +236,23 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
                     >
                       <option value="">Buscar un producto...</option>
                       {products.map(p => (
-                        <option key={p.id} value={p.id}>{p.name} — {formatCurrency(p.price)}</option>
+                        <option key={p.id} value={p.id}>{p.name}</option>
                       ))}
                     </select>
                   </div>
-                  <div className="flex-1 min-w-[120px]">
+                  <div className="flex-[1.5] min-w-[140px]">
+                    <div className="relative">
+                      <input 
+                        type="number" 
+                        value={item.customPrice}
+                        onChange={(e) => updateItem(index, 'customPrice', parseFloat(e.target.value) || 0)}
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-8 pr-4 py-4 text-sm focus:outline-none text-left font-black text-slate-900 group-hover/item:bg-white transition-colors"
+                      />
+                      <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <span className="absolute -top-2 left-4 text-[8px] font-black text-blue-500 bg-white px-2 py-0.5 rounded-full shadow-sm border border-blue-50 transition-all uppercase tracking-tighter">Precio Unit.</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-[100px]">
                     <div className="relative">
                       <input 
                         type="number" 
