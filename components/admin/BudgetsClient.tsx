@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatDate, formatCurrency } from "@/lib/formatters";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
@@ -13,22 +14,44 @@ interface BudgetsClientProps {
 }
 
 export default function BudgetsClient({ initialBudgets, products }: BudgetsClientProps) {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [newBudget, setNewBudget] = useState({
     customerName: "",
     customerEmail: "",
     items: [{ productId: "", quantity: 1, customPrice: 0 }]
   });
 
-  const handleCreateBudget = () => {
-    setIsModalOpen(false);
-    // Reiniciar form
-    setNewBudget({
-      customerName: "",
-      customerEmail: "",
-      items: [{ productId: "", quantity: 1, customPrice: 0 }]
-    });
-    alert("Presupuesto creado exitosamente (Simulado)");
+  const handleCreateBudget = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/budgets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBudget),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Error al crear el presupuesto");
+      }
+
+      setIsModalOpen(false);
+      // Reiniciar form
+      setNewBudget({
+        customerName: "",
+        customerEmail: "",
+        items: [{ productId: "", quantity: 1, customPrice: 0 }]
+      });
+      
+      router.refresh();
+      alert("Presupuesto creado exitosamente");
+    } catch (error: any) {
+      alert("Error: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addItem = () => {
@@ -88,7 +111,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
           <input 
             type="text" 
             placeholder="Buscar por cliente, email o # presupuesto..." 
-            className="w-full bg-white border border-slate-200 rounded-3xl pl-14 pr-6 py-5 text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all shadow-sm"
+            className="w-full bg-white border border-slate-200 rounded-3xl pl-14 pr-6 py-5 text-sm text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all shadow-sm"
           />
         </div>
         <div className="bg-white border border-slate-200 rounded-3xl p-1 flex items-center shadow-sm">
@@ -192,14 +215,14 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
                 <input 
                   type="text" 
                   placeholder="Nombre completo"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all"
                   value={newBudget.customerName}
                   onChange={(e) => setNewBudget({...newBudget, customerName: e.target.value})}
                 />
                 <input 
                   type="email" 
                   placeholder="email@ejemplo.com"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all"
                   value={newBudget.customerEmail}
                   onChange={(e) => setNewBudget({...newBudget, customerEmail: e.target.value})}
                 />
@@ -292,10 +315,10 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
             </button>
             <button 
               onClick={handleCreateBudget} 
-              className="btn-premium py-5 rounded-[24px] font-black text-white shadow-premium border-none flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
-              disabled={!newBudget.customerName || !newBudget.items[0].productId}
+              className="btn-premium py-5 rounded-[24px] font-black text-white shadow-premium border-none flex items-center justify-center gap-3 uppercase tracking-widest text-xs disabled:opacity-50"
+              disabled={!newBudget.customerName || !newBudget.items[0].productId || loading}
             >
-              Generar Presupuesto <Send size={20} />
+              {loading ? "Generando..." : "Generar Presupuesto"} <Send size={20} />
             </button>
           </div>
         </div>
