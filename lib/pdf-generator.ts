@@ -1,5 +1,5 @@
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 export function generateBudgetPDF(order: any) {
   const doc = new jsPDF({
@@ -80,7 +80,7 @@ export function generateBudgetPDF(order: any) {
     `$${item.subtotal.toLocaleString("es-AR", { minimumFractionDigits: 2 })}`,
   ]);
 
-  (doc as any).autoTable({
+  autoTable(doc, {
     startY: 80,
     head: tableHeaders,
     body: tableBody,
