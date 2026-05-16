@@ -54,17 +54,8 @@ export default async function ShopPage({ searchParams }: PageProps) {
   // Obtener cotización de dólar BNA para conversión automática
   const cotizacion = await getDolarCotizacion();
   
-  const products = rawProducts 
-    ? (rawProducts as Product[]).map(p => {
-        const isUSD = (p as any).currency === "USD" || !(p as any).currency;
-        const rate = isUSD ? cotizacion : 1;
-        return {
-          ...p,
-          price: Math.round(p.price * rate),
-          compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * rate) : null
-        };
-      })
-    : null;
+  const { processProductsList } = await import("@/lib/offers");
+  const products = processProductsList(rawProducts as Product[], cotizacion);
 
   // Get categories for filter
   const { data: rawCategories } = await supabase

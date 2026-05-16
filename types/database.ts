@@ -88,6 +88,9 @@ export interface Database {
           currency: string;
           created_at: string;
           updated_at: string;
+          offer_price: number | null;
+          offer_start: string | null;
+          offer_end: string | null;
         };
         Insert: {
           id?: string;
@@ -108,6 +111,9 @@ export interface Database {
           currency?: string;
           created_at?: string;
           updated_at?: string;
+          offer_price?: number | null;
+          offer_start?: string | null;
+          offer_end?: string | null;
         };
         Update: {
           id?: string;
@@ -127,6 +133,9 @@ export interface Database {
           low_stock_threshold?: number;
           currency?: string;
           updated_at?: string;
+          offer_price?: number | null;
+          offer_start?: string | null;
+          offer_end?: string | null;
         };
       };
       product_variants: {

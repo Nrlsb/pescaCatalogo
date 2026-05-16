@@ -8,6 +8,7 @@ import { Plus, Pencil, Image as ImageIcon } from "lucide-react";
 import DeleteProductButton from "@/components/admin/DeleteProductButton";
 import type { Product } from "@/types/database";
 import { getDolarCotizacion } from "@/lib/dolar";
+import { isOfferActive } from "@/lib/offers";
 
 type ProductWithCategory = Product & { categories: { name: string } | null };
 
@@ -79,25 +80,70 @@ export default async function AdminProductsPage() {
                   {(product.categories as { name: string } | null)?.name ?? "-"}
                 </td>
                 <td className="px-5 py-4">
-                  {product.currency === "ARS" ? (
-                    <>
-                      <div className="font-semibold text-gray-900">
-                        {formatCurrency(product.price)}
-                      </div>
-                      <div className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
-                        ARS (Pesos)
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="font-semibold text-gray-900">
-                        U$S {product.price.toFixed(2)}
-                      </div>
-                      <div className="text-xs text-gray-500 font-medium whitespace-nowrap">
-                        ~ {formatCurrency(Math.round(product.price * cotizacion))}
-                      </div>
-                    </>
-                  )}
+                  {(() => {
+                    const active = isOfferActive(product);
+                    const hasScheduled = !!(product.offer_price && !active && product.offer_start && new Date(product.offer_start) > new Date());
+                    
+                    if (active && product.offer_price) {
+                      return (
+                        <div className="space-y-1">
+                          <div className="font-bold text-emerald-600 whitespace-nowrap">
+                            {product.currency === "ARS" 
+                              ? formatCurrency(product.offer_price) 
+                              : `U$S ${product.offer_price.toFixed(2)}`}
+                          </div>
+                          <div className="text-xs text-gray-400 line-through whitespace-nowrap">
+                            {product.currency === "ARS" 
+                              ? formatCurrency(product.price) 
+                              : `U$S ${product.price.toFixed(2)}`}
+                          </div>
+                          <span className="inline-block text-[9px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                            Oferta Activa
+                          </span>
+                        </div>
+                      );
+                    }
+                    
+                    if (hasScheduled && product.offer_price) {
+                      return (
+                        <div className="space-y-1">
+                          <div className="font-semibold text-gray-900 whitespace-nowrap">
+                            {product.currency === "ARS" 
+                              ? formatCurrency(product.price) 
+                              : `U$S ${product.price.toFixed(2)}`}
+                          </div>
+                          <div className="text-xs text-blue-600 whitespace-nowrap">
+                            {product.currency === "ARS" 
+                              ? `Oferta: ${formatCurrency(product.offer_price)}` 
+                              : `Oferta: U$S ${product.offer_price.toFixed(2)}`}
+                          </div>
+                          <span className="inline-block text-[9px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                            Programada
+                          </span>
+                        </div>
+                      );
+                    }
+
+                    return product.currency === "ARS" ? (
+                      <>
+                        <div className="font-semibold text-gray-900">
+                          {formatCurrency(product.price)}
+                        </div>
+                        <div className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                          ARS (Pesos)
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="font-semibold text-gray-900">
+                          U$S {product.price.toFixed(2)}
+                        </div>
+                        <div className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                          ~ {formatCurrency(Math.round(product.price * cotizacion))}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </td>
                 <td className="px-5 py-4 text-gray-500 font-mono text-xs">
                   {product.sku ?? "-"}

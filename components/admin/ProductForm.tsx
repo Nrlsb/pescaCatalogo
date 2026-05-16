@@ -44,6 +44,9 @@ interface ProductFormProps {
     images: string[];
     product_variants?: Variant[];
     inventory?: { quantity: number }[];
+    offer_price?: number | null;
+    offer_start?: string | null;
+    offer_end?: string | null;
   };
 }
 
@@ -52,6 +55,21 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   const { toast } = useNotification();
   const isEdit = !!initialData;
   const [loading, setLoading] = useState(false);
+  
+  // Convert dates to YYYY-MM-DDTHH:MM for datetime-local inputs
+  const formatDateForInput = (isoString?: string | null) => {
+    if (!isoString) return "";
+    try {
+      const d = new Date(isoString);
+      // Ajustar timezone local
+      const offset = d.getTimezoneOffset();
+      const localDate = new Date(d.getTime() - offset * 60 * 1000);
+      return localDate.toISOString().slice(0, 16);
+    } catch {
+      return "";
+    }
+  };
+
   const [form, setForm] = useState({
     name: initialData?.name ?? "",
     slug: initialData?.slug ?? "",
@@ -67,7 +85,14 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
     is_featured: initialData?.is_featured ?? false,
     low_stock_threshold: initialData?.low_stock_threshold?.toString() ?? "5",
     currency: (initialData as any)?.currency ?? "USD",
+    
+    // Ofertas programadas
+    offer_price: initialData?.offer_price?.toString() ?? "",
+    offer_start: formatDateForInput(initialData?.offer_start),
+    offer_end: formatDateForInput(initialData?.offer_end),
   });
+  
+  const [hasOffer, setHasOffer] = useState(!!initialData?.offer_price);
   const [images, setImages] = useState<string[]>(initialData?.images ?? []);
   const [variants, setVariants] = useState<Variant[]>(
     initialData?.product_variants ?? []
@@ -112,6 +137,25 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
     e.preventDefault();
     setLoading(true);
     try {
+      // Validaciones para oferta programada
+      if (hasOffer) {
+        if (!form.offer_price) {
+          toast("El precio de oferta es obligatorio si la oferta está habilitada", "error");
+          setLoading(false);
+          return;
+        }
+        if (parseFloat(form.offer_price) >= parseFloat(form.price)) {
+          toast("El precio de oferta debe ser menor al precio normal", "error");
+          setLoading(false);
+          return;
+        }
+        if (form.offer_start && form.offer_end && new Date(form.offer_start) >= new Date(form.offer_end)) {
+          toast("La fecha de inicio de la oferta debe ser anterior a la de fin", "error");
+          setLoading(false);
+          return;
+        }
+      }
+
       const body = {
         ...form,
         price: parseFloat(form.price),
@@ -125,6 +169,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         images,
         variants,
         initial_stock: isEdit ? undefined : parseInt(initialStock),
+        
+        // Ofertas programadas
+        offer_price: hasOffer && form.offer_price ? parseFloat(form.offer_price) : null,
+        offer_start: hasOffer && form.offer_start ? new Date(form.offer_start).toISOString() : null,
+        offer_end: hasOffer && form.offer_end ? new Date(form.offer_end).toISOString() : null,
       };
 
       const res = await fetch(
@@ -275,6 +324,68 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             placeholder={form.currency === "USD" ? "8.00" : "8000.00"}
             helperText="Solo visible en reportes internos"
           />
+        </div>
+
+        {/* Programar Oferta */}
+        <div className="pt-6 border-t border-gray-100 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900">Programar Oferta Especial</h3>
+              <p className="text-xs text-gray-500">Define un precio de oferta temporal y programa su vigencia para que se active automáticamente</p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={hasOffer}
+                onChange={(e) => setHasOffer(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          {hasOffer && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-gray-100 animate-in fade-in slide-in-from-top-1 duration-200">
+              <Input
+                label={`Precio de oferta (${form.currency}) *`}
+                name="offer_price"
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.offer_price}
+                onChange={handleChange}
+                required
+                placeholder={form.currency === "USD" ? "12.00" : "12000.00"}
+                helperText="El precio rebajado durante el período de oferta"
+              />
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Fecha/Hora de Inicio
+                </label>
+                <input
+                  type="datetime-local"
+                  name="offer_start"
+                  value={form.offer_start}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-[10px] text-gray-500 mt-1">Opcional. Si se deja vacío, la oferta comenzará inmediatamente</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Fecha/Hora de Fin
+                </label>
+                <input
+                  type="datetime-local"
+                  name="offer_end"
+                  value={form.offer_end}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-[10px] text-gray-500 mt-1">Opcional. Si se deja vacío, la oferta no tendrá fecha de finalización</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

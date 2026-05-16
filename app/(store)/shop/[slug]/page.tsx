@@ -57,20 +57,17 @@ export default async function ProductDetailPage({ params }: PageProps) {
     .eq("is_active", true)
     .single();
 
-  const product = data as ProductDetail | null;
-  if (!product) notFound();
+  const rawProduct = data as ProductDetail | null;
+  if (!rawProduct) notFound();
 
   // Obtener cotización de dólar BNA para conversión automática
   const cotizacion = await getDolarCotizacion();
   
+  const { processProductPrices } = await import("@/lib/offers");
+  const product = processProductPrices(rawProduct, cotizacion) as ProductDetail;
   const isUSD = (product as any).currency === "USD" || !(product as any).currency;
   const rate = isUSD ? cotizacion : 1;
-  
-  // Convertir precios de dólares a pesos argentinos
-  product.price = Math.round(product.price * rate);
-  if (product.compare_at_price) {
-    product.compare_at_price = Math.round(product.compare_at_price * rate);
-  }
+
   if (product.product_variants) {
     product.product_variants = product.product_variants.map(v => ({
       ...v,
