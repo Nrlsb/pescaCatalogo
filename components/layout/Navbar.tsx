@@ -120,18 +120,21 @@ export default function Navbar() {
                 </button>
               )}
 
-              <button
-                onClick={() => setCartOpen(true)}
-                className="relative p-2.5 rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
-                aria-label="Carrito"
-              >
-                <ShoppingCart size={22} strokeWidth={2.5} />
-                {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-black ring-2 ring-background">
-                    {itemCount > 99 ? "99+" : itemCount}
-                  </span>
-                )}
-              </button>
+              {/* Cart visible only for admins */}
+              {isAdmin && (
+                <button
+                  onClick={() => setCartOpen(true)}
+                  className="relative p-2.5 rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground transition-all shadow-sm"
+                  aria-label="Carrito"
+                >
+                  <ShoppingCart size={22} strokeWidth={2.5} />
+                  {itemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-black ring-2 ring-background">
+                      {itemCount > 99 ? "99+" : itemCount}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {/* Mobile menu button */}
               <button

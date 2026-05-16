@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
 import { useCartStore } from "@/store/cartStore";
 import type { Product } from "@/types/database";
@@ -10,9 +10,10 @@ import Badge from "@/components/ui/Badge";
 
 interface ProductCardProps {
   product: Product & { stock_status?: string; total_stock?: number };
+  isAdmin?: boolean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, isAdmin }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -56,7 +57,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               <Badge color="red" size="sm" className="font-bold tracking-widest uppercase text-[10px]">Agotado</Badge>
             )}
           </div>
-          {product.compare_at_price && product.compare_at_price > product.price && (
+          {isAdmin && product.compare_at_price && product.compare_at_price > product.price && (
             <div className="absolute top-4 right-4">
               <Badge color="orange" size="sm" className="font-bold">
                 -{Math.round((1 - product.price / product.compare_at_price) * 100)}%
@@ -77,29 +78,44 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h3>
 
           <div className="flex items-center justify-between mt-6">
-            <div className="flex flex-col">
-              {product.compare_at_price && product.compare_at_price > product.price && (
-                <span className="text-xs text-muted-foreground line-through decoration-primary/20">
-                  {formatCurrency(product.compare_at_price)}
-                </span>
-              )}
-              <span className="text-xl font-bold text-foreground tracking-tight">
-                {formatCurrency(product.price)}
-              </span>
-            </div>
+            {isAdmin ? (
+              <>
+                <div className="flex flex-col">
+                  {product.compare_at_price && product.compare_at_price > product.price && (
+                    <span className="text-xs text-muted-foreground line-through decoration-primary/20">
+                      {formatCurrency(product.compare_at_price)}
+                    </span>
+                  )}
+                  <span className="text-xl font-bold text-foreground tracking-tight">
+                    {formatCurrency(product.price)}
+                  </span>
+                </div>
 
-            <button
-              onClick={handleAddToCart}
-              disabled={isOutOfStock}
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 disabled:opacity-30 active:scale-95 btn-premium"
-              aria-label="Agregar al carrito"
-            >
-              <ShoppingCart size={20} />
-            </button>
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isOutOfStock}
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 disabled:opacity-30 active:scale-95 btn-premium"
+                  aria-label="Agregar al carrito"
+                >
+                  <ShoppingCart size={20} />
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="text-sm font-bold text-primary uppercase tracking-widest">
+                  Consultar Precio
+                </span>
+
+                <div
+                  className="w-12 h-12 flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 active:scale-95 btn-premium"
+                >
+                  <ArrowRight size={20} />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
     </Link>
-
   );
 }

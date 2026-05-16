@@ -17,6 +17,17 @@ export default async function ShopPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    isAdmin = (profile as { role: string } | null)?.role === "admin";
+  }
+
   // Build query
   let query = supabase
     .from("products")
@@ -93,8 +104,10 @@ export default async function ShopPage({ searchParams }: PageProps) {
               <div className="space-y-2">
                 {[
                   { value: "", label: "Más recientes" },
-                  { value: "price_asc", label: "Menor precio" },
-                  { value: "price_desc", label: "Mayor precio" },
+                  ...(isAdmin ? [
+                    { value: "price_asc", label: "Menor precio" },
+                    { value: "price_desc", label: "Mayor precio" },
+                  ] : []),
                 ].map((opt) => (
                   <a
                     key={opt.value}
@@ -159,6 +172,7 @@ export default async function ShopPage({ searchParams }: PageProps) {
                 <ProductCard
                   key={product.id}
                   product={product as Product & { stock_status?: string }}
+                  isAdmin={isAdmin}
                 />
               ))}
             </div>

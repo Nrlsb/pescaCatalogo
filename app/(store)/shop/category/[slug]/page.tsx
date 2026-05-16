@@ -22,6 +22,17 @@ export default async function CategoryPage({ params }: PageProps) {
   const category = rawCategory as Category | null;
   if (!category) notFound();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+    isAdmin = (profile as { role: string } | null)?.role === "admin";
+  }
+
   const { data: rawProducts } = await supabase
     .from("products")
     .select("*, inventory (quantity)")
@@ -45,6 +56,7 @@ export default async function CategoryPage({ params }: PageProps) {
             <ProductCard
               key={product.id}
               product={product as Product & { stock_status?: string }}
+              isAdmin={isAdmin}
             />
           ))}
         </div>
