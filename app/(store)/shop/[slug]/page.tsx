@@ -8,6 +8,7 @@ import ProductGallery from "@/components/shop/ProductGallery";
 import Badge from "@/components/ui/Badge";
 import type { Metadata } from "next";
 import type { Product, ProductVariant } from "@/types/database";
+import { getDolarCotizacion } from "@/lib/dolar";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -58,6 +59,21 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   const product = data as ProductDetail | null;
   if (!product) notFound();
+
+  // Obtener cotización de dólar BNA para conversión automática
+  const cotizacion = await getDolarCotizacion();
+  
+  // Convertir precios de dólares a pesos argentinos
+  product.price = Math.round(product.price * cotizacion);
+  if (product.compare_at_price) {
+    product.compare_at_price = Math.round(product.compare_at_price * cotizacion);
+  }
+  if (product.product_variants) {
+    product.product_variants = product.product_variants.map(v => ({
+      ...v,
+      price_delta: Math.round(v.price_delta * cotizacion)
+    }));
+  }
 
   const totalStock =
     product.inventory?.reduce((sum, i) => sum + i.quantity, 0) ?? 0;

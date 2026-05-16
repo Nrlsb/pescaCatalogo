@@ -4,6 +4,7 @@ import ProductCard from "@/components/shop/ProductCard";
 import Badge from "@/components/ui/Badge";
 import { Fish, ShoppingBag } from "lucide-react";
 import type { Category, Product } from "@/types/database";
+import { getDolarCotizacion } from "@/lib/dolar";
 
 interface PageProps {
   searchParams: Promise<{ q?: string; category?: string; sort?: string }>;
@@ -49,7 +50,17 @@ export default async function ShopPage({ searchParams }: PageProps) {
   else query = query.order("created_at", { ascending: false });
 
   const { data: rawProducts } = await query;
-  const products = rawProducts as (Product & { stock_status?: string })[] | null;
+  
+  // Obtener cotización de dólar BNA para conversión automática
+  const cotizacion = await getDolarCotizacion();
+  
+  const products = rawProducts 
+    ? (rawProducts as Product[]).map(p => ({
+        ...p,
+        price: Math.round(p.price * cotizacion),
+        compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * cotizacion) : null
+      }))
+    : null;
 
   // Get categories for filter
   const { data: rawCategories } = await supabase

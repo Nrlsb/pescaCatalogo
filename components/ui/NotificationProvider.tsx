@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { AlertTriangle, CheckCircle2, Info, X, HelpCircle, AlertCircle } from "lucide-react";
+import { useDolarStore } from "@/store/dolarStore";
 
 interface ConfirmState {
   open: boolean;
@@ -27,6 +28,12 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
+
+  // Cargar cotización del dólar BNA de manera global al iniciar la aplicación
+  const fetchCotizacion = useDolarStore((s) => s.fetchCotizacion);
+  useEffect(() => {
+    fetchCotizacion();
+  }, [fetchCotizacion]);
 
   const toast = useCallback((message: string, type: "success" | "error" | "info" = "info") => {
     const id = Math.random().toString(36).substring(2, 9);

@@ -7,11 +7,16 @@ import Badge from "@/components/ui/Badge";
 import { Plus, Pencil, Image as ImageIcon } from "lucide-react";
 import DeleteProductButton from "@/components/admin/DeleteProductButton";
 import type { Product } from "@/types/database";
+import { getDolarCotizacion } from "@/lib/dolar";
 
 type ProductWithCategory = Product & { categories: { name: string } | null };
 
 export default async function AdminProductsPage() {
   const supabase = await createClient();
+  
+  // Obtener cotización de dólar BNA para conversión informativa en el listado
+  const cotizacion = await getDolarCotizacion();
+
   const { data: rawProducts } = await supabase
     .from("products")
     .select("*, categories (name)")
@@ -73,8 +78,13 @@ export default async function AdminProductsPage() {
                 <td className="px-5 py-4 text-gray-600">
                   {(product.categories as { name: string } | null)?.name ?? "-"}
                 </td>
-                <td className="px-5 py-4 font-medium text-gray-900">
-                  {formatCurrency(product.price)}
+                <td className="px-5 py-4">
+                  <div className="font-semibold text-gray-900">
+                    U$S {product.price.toFixed(2)}
+                  </div>
+                  <div className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                    ~ {formatCurrency(Math.round(product.price * cotizacion))}
+                  </div>
                 </td>
                 <td className="px-5 py-4 text-gray-500 font-mono text-xs">
                   {product.sku ?? "-"}

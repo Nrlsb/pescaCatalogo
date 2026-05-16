@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import ProductCard from "@/components/shop/ProductCard";
 import type { Category, Product } from "@/types/database";
 
+import { getDolarCotizacion } from "@/lib/dolar";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -39,7 +41,17 @@ export default async function CategoryPage({ params }: PageProps) {
     .eq("category_id", category.id)
     .eq("is_active", true)
     .order("created_at", { ascending: false });
-  const products = rawProducts as Product[] | null;
+    
+  // Obtener cotización de dólar BNA para conversión automática
+  const cotizacion = await getDolarCotizacion();
+  
+  const products = rawProducts 
+    ? (rawProducts as Product[]).map(p => ({
+        ...p,
+        price: Math.round(p.price * cotizacion),
+        compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * cotizacion) : null
+      }))
+    : null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

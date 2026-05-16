@@ -226,7 +226,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Input
-            label="Precio de venta *"
+            label="Precio de venta (USD) *"
             name="price"
             type="number"
             step="0.01"
@@ -234,29 +234,30 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             value={form.price}
             onChange={handleChange}
             required
-            placeholder="1500.00"
+            placeholder="15.00"
+            helperText="Se convertirá automáticamente a ARS"
           />
           <Input
-            label="Precio tachado"
+            label="Precio tachado (USD)"
             name="compare_at_price"
             type="number"
             step="0.01"
             min="0"
             value={form.compare_at_price}
             onChange={handleChange}
-            placeholder="2000.00"
-            helperText="Para mostrar descuento"
+            placeholder="20.00"
+            helperText="Para mostrar descuento en la tienda"
           />
           <Input
-            label="Precio de costo"
+            label="Precio de costo (USD)"
             name="cost_price"
             type="number"
             step="0.01"
             min="0"
             value={form.cost_price}
             onChange={handleChange}
-            placeholder="800.00"
-            helperText="Solo visible para admin"
+            placeholder="8.00"
+            helperText="Solo visible en reportes internos"
           />
         </div>
       </div>
@@ -364,7 +365,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
                 </div>
                 <div className="w-32">
                   <Input
-                    label="Diferencia precio"
+                    label="Diferencia precio (USD)"
                     type="number"
                     value={v.price_delta.toString()}
                     onChange={(e) =>

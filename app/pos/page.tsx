@@ -11,6 +11,7 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import Image from "next/image";
 import { useNotification } from "@/components/ui/NotificationProvider";
+import { useDolarStore } from "@/store/dolarStore";
 
 interface ProductWithStock extends Product {
   inventory: { quantity: number }[];
@@ -31,6 +32,10 @@ export default function POSPage() {
   const [isScannerMode, setIsScannerMode] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
 
+  // Obtener cotización de dólar BNA desde el store de Zustand
+  const cotizacion = useDolarStore((s) => s.cotizacion);
+  const fetchCotizacion = useDolarStore((s) => s.fetchCotizacion);
+
   const {
     items,
     addItem,
@@ -47,6 +52,11 @@ export default function POSPage() {
 
   const total = subtotal();
 
+  // Asegurar que la cotización está cargada
+  useEffect(() => {
+    fetchCotizacion();
+  }, [fetchCotizacion]);
+
   useEffect(() => {
     const supabase = createClient();
     
@@ -58,7 +68,6 @@ export default function POSPage() {
       .order("name")
       .then(({ data }) => {
         setProducts((data as ProductWithStock[]) ?? []);
-        setFiltered((data as ProductWithStock[]) ?? []);
       });
 
     // Fetch categories
@@ -75,6 +84,14 @@ export default function POSPage() {
   useEffect(() => {
     const q = search.toLowerCase().trim();
     let result = products;
+
+    // Aplicar la cotización del dólar BNA para convertir los precios de USD a ARS
+    const currentCotizacion = cotizacion ?? 950;
+    result = result.map((p) => ({
+      ...p,
+      price: Math.round(p.price * currentCotizacion),
+      compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * currentCotizacion) : null,
+    }));
 
     if (selectedCategory) {
       result = result.filter(p => p.category_id === selectedCategory);
@@ -108,7 +125,7 @@ export default function POSPage() {
     }
     
     setFiltered(result);
-  }, [search, products, selectedCategory, isScannerMode, addItem]);
+  }, [search, products, selectedCategory, isScannerMode, addItem, cotizacion]);
 
   useEffect(() => {
     searchRef.current?.focus();
