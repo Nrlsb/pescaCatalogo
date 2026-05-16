@@ -35,7 +35,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
 
   let query = supabase
     .from("orders")
-    .select("*, profiles (full_name)")
+    .select("*, profiles!orders_customer_id_fkey (full_name)")
     .order("created_at", { ascending: false });
 
   if (params.status) query = query.eq("status", params.status);

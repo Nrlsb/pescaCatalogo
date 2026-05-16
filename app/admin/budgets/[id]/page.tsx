@@ -2,26 +2,14 @@ export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
-import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/constants";
 import Badge from "@/components/ui/Badge";
-import OrderStatusUpdater from "@/components/admin/OrderStatusUpdater";
 import type { Order, OrderItem } from "@/types/database";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-const statusColors: Record<string, "yellow" | "blue" | "indigo" | "purple" | "green" | "red" | "gray"> = {
-  pending: "yellow",
-  confirmed: "blue",
-  processing: "indigo",
-  shipped: "purple",
-  delivered: "green",
-  cancelled: "red",
-  refunded: "gray",
-};
-
-export default async function AdminOrderDetailPage({ params }: PageProps) {
+export default async function AdminBudgetDetailPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
@@ -39,31 +27,19 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
   
   if (!order) notFound();
 
-  const shipping = order.shipping_address as {
-    line1?: string;
-    city?: string;
-    province?: string;
-    postal_code?: string;
-  } | null;
-
   return (
     <div className="p-8 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Pedido {order.order_number}
+            Presupuesto {order.order_number.replace('ORD-', 'PRE-')}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             {formatDateTime(order.created_at)}
           </p>
         </div>
         <div className="flex gap-2">
-          <Badge color={statusColors[order.status]}>
-            {ORDER_STATUSES.find((s) => s.value === order.status)?.label}
-          </Badge>
-          <Badge color={order.payment_status === "paid" ? "green" : "yellow"}>
-            {PAYMENT_STATUSES.find((s) => s.value === order.payment_status)?.label}
-          </Badge>
+          <Badge color="yellow">Borrador</Badge>
         </div>
       </div>
 
@@ -82,26 +58,12 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
             <p className="text-sm text-gray-500">{order.shipping_phone}</p>
           )}
         </div>
-
-        {/* Shipping */}
-        {shipping && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <h2 className="font-semibold text-gray-900 mb-3">Envío</h2>
-            <p className="text-sm text-gray-700">{shipping.line1}</p>
-            <p className="text-sm text-gray-600">
-              {shipping.city}, {shipping.province} {shipping.postal_code}
-            </p>
-            {order.shipping_method && (
-              <p className="text-sm text-gray-500 mt-1">{order.shipping_method}</p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Items */}
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-6">
         <div className="px-5 py-4 border-b bg-gray-50">
-          <h2 className="font-semibold text-gray-900">Productos</h2>
+          <h2 className="font-semibold text-gray-900">Productos Cotizados</h2>
         </div>
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b">
@@ -146,9 +108,6 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           </tfoot>
         </table>
       </div>
-
-      {/* Update status */}
-      <OrderStatusUpdater orderId={order.id} currentStatus={order.status} currentPayment={order.payment_status} />
     </div>
   );
 }
