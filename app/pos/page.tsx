@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePosStore } from "@/store/posStore";
 import { formatCurrency } from "@/lib/formatters";
+import { processProductsList } from "@/lib/offers";
 import { createClient } from "@/lib/supabase/client";
 import { Search, Trash2, ShoppingBag, Plus, Minus, Check, CreditCard, Banknote, Landmark, ScanBarcode, ArrowLeft } from "lucide-react";
 import type { Product, Category } from "@/types/database";
@@ -85,17 +86,9 @@ export default function POSPage() {
     const q = search.toLowerCase().trim();
     let result = products;
 
-    // Aplicar la cotización del dólar BNA para convertir los precios de USD a ARS
+    // Aplicar la lógica unificada de ofertas y cotización de dólar BNA (USD a ARS)
     const currentCotizacion = cotizacion ?? 950;
-    result = result.map((p) => {
-      const isUSD = (p as any).currency === "USD" || !(p as any).currency;
-      const rate = isUSD ? currentCotizacion : 1;
-      return {
-        ...p,
-        price: Math.round(p.price * rate),
-        compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * rate) : null,
-      };
-    });
+    result = processProductsList(result, currentCotizacion) as ProductWithStock[];
 
     if (selectedCategory) {
       result = result.filter(p => p.category_id === selectedCategory);
@@ -312,10 +305,15 @@ export default function POSPage() {
                     <p className="font-bold text-slate-900 dark:text-slate-100 text-xs line-clamp-2 leading-tight mb-2">
                       {product.name}
                     </p>
-                    <div className="mt-auto">
+                    <div className="mt-auto flex items-baseline gap-1.5 flex-wrap">
                       <p className="text-sm font-black text-primary">
                         {formatCurrency(product.price)}
                       </p>
+                      {product.compare_at_price && (
+                        <p className="text-[10px] text-slate-400 line-through font-medium">
+                          {formatCurrency(product.compare_at_price)}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </button>
