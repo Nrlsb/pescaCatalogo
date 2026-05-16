@@ -190,7 +190,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         title="Descargar PDF" 
-                        onClick={() => alert("Generando PDF de " + budget.order_number.replace("ORD-", "PRE-") + "...")}
+                        onClick={() => window.open(`/admin/budgets/${budget.id}/print`, '_blank')}
                         className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                       >
                         <FileDown size={18} />

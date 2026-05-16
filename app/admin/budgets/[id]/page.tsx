@@ -38,8 +38,16 @@ export default async function AdminBudgetDetailPage({ params }: PageProps) {
             {formatDateTime(order.created_at)}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Badge color="yellow">Borrador</Badge>
+          <a
+            href={`/admin/budgets/${order.id}/print`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
+          >
+            Imprimir / PDF
+          </a>
         </div>
       </div>
 

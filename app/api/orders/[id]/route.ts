@@ -10,7 +10,7 @@ export async function GET(_: Request, { params }: Params) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("orders")
-    .select("*, order_items (*), profiles (full_name)")
+    .select("*, order_items (*), profiles!orders_customer_id_fkey (full_name)")
     .eq("id", id)
     .single();
 

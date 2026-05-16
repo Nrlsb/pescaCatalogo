@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query: any = supabase
     .from("orders")
-    .select("*, profiles (full_name)")
+    .select("*, profiles!orders_customer_id_fkey (full_name)")
     .order("created_at", { ascending: false });
 
   if (status) query = query.eq("status", status);
