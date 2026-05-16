@@ -27,13 +27,13 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
   const { data: rawOrder } = await supabase
     .from("orders")
-    .select("*, order_items (*), profiles (full_name, email)")
+    .select("*, order_items (*), profiles (full_name)")
     .eq("id", id)
     .single();
 
   type OrderWithItems = Order & {
     order_items: OrderItem[];
-    profiles: { full_name: string; email: string } | null;
+    profiles: { full_name: string } | null;
   };
   const order = rawOrder as OrderWithItems | null;
   if (!order) notFound();
