@@ -12,6 +12,8 @@ import {
   Monitor,
   Fish,
   LogOut,
+  Star,
+  FileText,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -24,6 +26,8 @@ const links = [
   { href: "/admin/inventory", label: "Inventario", icon: Warehouse },
   { href: "/admin/orders", label: "Pedidos", icon: ShoppingBag },
   { href: "/admin/customers", label: "Clientes", icon: Users },
+  { href: "/admin/special-clients", label: "Clientes VIP", icon: Star },
+  { href: "/admin/budgets", label: "Presupuestos", icon: FileText },
   { href: "/pos", label: "Punto de Venta", icon: Monitor },
 ];
 
