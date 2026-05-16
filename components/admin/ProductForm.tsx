@@ -9,6 +9,7 @@ import { slugify } from "@/lib/formatters";
 import { Plus, Trash2, Package, Image as ImageIcon, Settings, Info, DollarSign } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 import StockAdjustButton from "./StockAdjustButton";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface Category {
   id: string;
@@ -47,6 +48,7 @@ interface ProductFormProps {
 
 export default function ProductForm({ categories, initialData }: ProductFormProps) {
   const router = useRouter();
+  const { toast } = useNotification();
   const isEdit = !!initialData;
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -133,10 +135,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
       );
 
       if (!res.ok) throw new Error("Error al guardar el producto");
+      toast(isEdit ? "Producto guardado correctamente" : "Producto creado correctamente", "success");
       router.push("/admin/products");
       router.refresh();
     } catch {
-      alert("Error al guardar el producto. Intentá nuevamente.");
+      toast("Error al guardar el producto. Intentá nuevamente.", "error");
     } finally {
       setLoading(false);
     }

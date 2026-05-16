@@ -6,6 +6,7 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import { MOVEMENT_REASONS } from "@/lib/constants";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface ProductWithVariants {
     id: string;
@@ -24,6 +25,7 @@ interface Props {
 
 export default function StockAdjustForm({ products }: Props) {
     const router = useRouter();
+    const { toast } = useNotification();
     const [selectedProductId, setSelectedProductId] = useState("");
     const [selectedVariantId, setSelectedVariantId] = useState("");
     const [delta, setDelta] = useState("");
@@ -57,10 +59,11 @@ export default function StockAdjustForm({ products }: Props) {
                 throw new Error(error.error || "Error al ajustar el stock");
             }
 
+            toast("Ajuste de stock realizado correctamente", "success");
             router.push("/admin/inventory");
             router.refresh();
         } catch (err: any) {
-            alert(err.message || "Error al ajustar el stock");
+            toast(err.message || "Error al ajustar el stock", "error");
         } finally {
             setLoading(false);
         }

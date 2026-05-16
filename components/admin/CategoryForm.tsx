@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { slugify } from "@/lib/formatters";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 export default function CategoryForm() {
   const router = useRouter();
+  const { toast } = useNotification();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
@@ -26,9 +28,10 @@ export default function CategoryForm() {
       setName("");
       setSlug("");
       setDescription("");
+      toast("Categoría creada correctamente", "success");
       router.refresh();
     } catch {
-      alert("Error al crear la categoría");
+      toast("Error al crear la categoría", "error");
     } finally {
       setLoading(false);
     }

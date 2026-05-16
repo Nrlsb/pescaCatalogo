@@ -7,6 +7,7 @@ import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
 import { FileText, Plus, Search, FileDown, Mail, User, Package, Trash2, Hash, Calendar, DollarSign, Send, ArrowRight } from "lucide-react";
 import type { Order, Product } from "@/types/database";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface BudgetsClientProps {
   initialBudgets: Order[];
@@ -15,6 +16,7 @@ interface BudgetsClientProps {
 
 export default function BudgetsClient({ initialBudgets, products }: BudgetsClientProps) {
   const router = useRouter();
+  const { toast, confirm: customConfirm } = useNotification();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,9 +49,9 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
       });
       
       router.refresh();
-      alert("Presupuesto creado exitosamente");
+      toast("Presupuesto creado exitosamente", "success");
     } catch (error: any) {
-      alert("Error: " + error.message);
+      toast("Error: " + error.message, "error");
     } finally {
       setLoading(false);
     }
@@ -101,14 +103,19 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
       const { generateBudgetPDF } = await import("@/lib/pdf-generator");
       generateBudgetPDF(budgetData);
     } catch (error: any) {
-      alert("Error al descargar el PDF: " + error.message);
+      toast("Error al descargar el PDF: " + error.message, "error");
     } finally {
       setDownloadingId(null);
     }
   };
 
   const handleDeleteBudget = async (budgetId: string) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este presupuesto?")) return;
+    const confirmed = await customConfirm(
+      "Eliminar Presupuesto",
+      "¿Estás seguro de que deseas eliminar este presupuesto? Esta acción no se puede deshacer.",
+      "danger"
+    );
+    if (!confirmed) return;
     
     setDeletingId(budgetId);
     try {
@@ -122,9 +129,9 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
       }
       
       router.refresh();
-      alert("Presupuesto eliminado exitosamente");
+      toast("Presupuesto eliminado exitosamente", "success");
     } catch (error: any) {
-      alert("Error al eliminar: " + error.message);
+      toast("Error al eliminar: " + error.message, "error");
     } finally {
       setDeletingId(null);
     }
@@ -240,7 +247,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
                       </button>
                       <button 
                         title="Enviar por Email" 
-                        onClick={() => alert("Enviando presupuesto a " + (budget.shipping_email || "cliente") + "...")}
+                        onClick={() => toast("Enviando presupuesto a " + (budget.shipping_email || "cliente") + "...", "info")}
                         className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                       >
                         <Mail size={18} />

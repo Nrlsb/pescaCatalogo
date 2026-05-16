@@ -5,6 +5,7 @@ import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "@/lib/constants";
 import { useRouter } from "next/navigation";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface Props {
   orderId: string;
@@ -17,6 +18,7 @@ export default function OrderStatusUpdater({ orderId, currentStatus, currentPaym
   const [payment, setPayment] = useState(currentPayment);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useNotification();
 
   const handleSave = async () => {
     setLoading(true);
@@ -27,9 +29,10 @@ export default function OrderStatusUpdater({ orderId, currentStatus, currentPaym
         body: JSON.stringify({ status, payment_status: payment }),
       });
       if (!res.ok) throw new Error();
+      toast("Pedido actualizado correctamente", "success");
       router.refresh();
     } catch {
-      alert("Error al actualizar el pedido");
+      toast("Error al actualizar el pedido", "error");
     } finally {
       setLoading(false);
     }

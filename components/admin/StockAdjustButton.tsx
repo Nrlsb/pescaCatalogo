@@ -7,6 +7,7 @@ import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { MOVEMENT_REASONS } from "@/lib/constants";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface Props {
   productId: string;
@@ -21,6 +22,7 @@ export default function StockAdjustButton({ productId, productName, variantId }:
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useNotification();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,12 +40,13 @@ export default function StockAdjustButton({ productId, productName, variantId }:
         }),
       });
       if (!res.ok) throw new Error();
+      toast("Stock ajustado correctamente", "success");
       setOpen(false);
       setDelta("");
       setNotes("");
       router.refresh();
     } catch {
-      alert("Error al ajustar el stock");
+      toast("Error al ajustar el stock", "error");
     } finally {
       setLoading(false);
     }

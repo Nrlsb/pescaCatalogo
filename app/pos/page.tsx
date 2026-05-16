@@ -10,12 +10,14 @@ import type { Product, Category } from "@/types/database";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import Image from "next/image";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface ProductWithStock extends Product {
   inventory: { quantity: number }[];
 }
 
 export default function POSPage() {
+  const { toast } = useNotification();
   const [products, setProducts] = useState<ProductWithStock[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filtered, setFiltered] = useState<ProductWithStock[]>([]);
@@ -145,8 +147,9 @@ export default function POSPage() {
       setLastOrder(orderNumber);
       setPaymentOpen(false);
       setReceiptOpen(true);
+      toast("Venta procesada con éxito", "success");
     } catch {
-      alert("Error al procesar la venta");
+      toast("Error al procesar la venta", "error");
     } finally {
       setLoading(false);
     }

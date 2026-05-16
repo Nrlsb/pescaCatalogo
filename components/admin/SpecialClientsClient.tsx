@@ -7,6 +7,7 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { Star, Percent, UserPlus, Search } from "lucide-react";
 import type { Profile } from "@/types/database";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface SpecialClientsClientProps {
   initialCustomers: Profile[];
@@ -16,10 +17,11 @@ export default function SpecialClientsClient({ initialCustomers }: SpecialClient
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<string>("");
   const [discount, setDiscount] = useState<number>(10);
+  const { toast } = useNotification();
 
   const handleAssignVIP = () => {
     setIsModalOpen(false);
-    alert("Cliente asignado como VIP exitosamente (Simulado)");
+    toast("Cliente asignado como VIP exitosamente (Simulado)", "success");
   };
 
   return (

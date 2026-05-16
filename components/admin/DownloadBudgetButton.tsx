@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FileDown } from "lucide-react";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface DownloadBudgetButtonProps {
   budgetId: string;
@@ -9,6 +10,7 @@ interface DownloadBudgetButtonProps {
 
 export default function DownloadBudgetButton({ budgetId }: DownloadBudgetButtonProps) {
   const [downloading, setDownloading] = useState(false);
+  const { toast } = useNotification();
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -19,8 +21,9 @@ export default function DownloadBudgetButton({ budgetId }: DownloadBudgetButtonP
       
       const { generateBudgetPDF } = await import("@/lib/pdf-generator");
       generateBudgetPDF(budgetData);
+      toast("Descarga de PDF iniciada con éxito", "success");
     } catch (error: any) {
-      alert("Error al descargar el PDF: " + error.message);
+      toast("Error al descargar el PDF: " + error.message, "error");
     } finally {
       setDownloading(false);
     }

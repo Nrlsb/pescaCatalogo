@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { X, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
 import NextImage from "next/image";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface ImageUploadProps {
   images: string[];
@@ -19,13 +20,14 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
+  const { toast } = useNotification();
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     if (images.length + files.length > maxImages) {
-      alert(`Máximo ${maxImages} imágenes permitidas`);
+      toast(`Máximo ${maxImages} imágenes permitidas`, "error");
       return;
     }
 
@@ -50,9 +52,10 @@ export default function ImageUpload({
       }
 
       onChange(newImages);
+      toast("Imágenes subidas correctamente", "success");
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Error al subir la imagen. Asegúrate de que el bucket 'products' exista y tenga permisos públicos.");
+      toast("Error al subir la imagen. Asegúrate de que el bucket 'products' exista y tenga permisos públicos.", "error");
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

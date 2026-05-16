@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { NotificationProvider } from "@/components/ui/NotificationProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${inter.variable} ${playfair.variable} h-full`}>
-      <body className="min-h-full flex flex-col antialiased font-sans">{children}</body>
+      <body className="min-h-full flex flex-col antialiased font-sans">
+        <NotificationProvider>{children}</NotificationProvider>
+      </body>
     </html>
   );
 }

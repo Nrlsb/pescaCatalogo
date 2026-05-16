@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/formatters";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useRouter } from "next/navigation";
+import { useNotification } from "@/components/ui/NotificationProvider";
 
 interface ShippingForm {
   name: string;
@@ -20,6 +21,7 @@ interface ShippingForm {
 export default function CheckoutPage() {
   const { items, total, subtotal, clearCart } = useCartStore();
   const router = useRouter();
+  const { toast } = useNotification();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("transfer");
   const [form, setForm] = useState<ShippingForm>({
@@ -55,9 +57,10 @@ export default function CheckoutPage() {
       if (!res.ok) throw new Error("Error al crear el pedido");
       const { orderId } = await res.json();
       clearCart();
+      toast("¡Pedido realizado con éxito!", "success");
       router.push(`/checkout/success?order=${orderId}`);
     } catch {
-      alert("Hubo un error al procesar tu pedido. Intentá nuevamente.");
+      toast("Hubo un error al procesar tu pedido. Intentá nuevamente.", "error");
     } finally {
       setLoading(false);
     }
