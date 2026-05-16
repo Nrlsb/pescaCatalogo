@@ -58,7 +58,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
   };
 
   return (
-    <div className="p-8 animate-in fade-in duration-500">
+    <div className="p-8 min-h-screen bg-gray-50 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
         <div>
           <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-2 text-ocean-gradient">Presupuestos</h1>
