@@ -88,6 +88,24 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
     }, 0);
   };
 
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const handleDownloadPDF = async (budgetId: string) => {
+    setDownloadingId(budgetId);
+    try {
+      const res = await fetch(`/api/orders/${budgetId}`);
+      if (!res.ok) throw new Error("Error al obtener los detalles del presupuesto");
+      const budgetData = await res.json();
+      
+      const { generateBudgetPDF } = await import("@/lib/pdf-generator");
+      generateBudgetPDF(budgetData);
+    } catch (error: any) {
+      alert("Error al descargar el PDF: " + error.message);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const filteredBudgets = initialBudgets.filter(budget => {
     const searchLower = searchTerm.toLowerCase();
     const orderNum = budget.order_number.toLowerCase();
@@ -190,10 +208,11 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         title="Descargar PDF" 
-                        onClick={() => window.open(`/admin/budgets/${budget.id}/print`, '_blank')}
-                        className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                        disabled={downloadingId === budget.id}
+                        onClick={() => handleDownloadPDF(budget.id)}
+                        className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all disabled:opacity-50"
                       >
-                        <FileDown size={18} />
+                        <FileDown size={18} className={downloadingId === budget.id ? "animate-pulse" : ""} />
                       </button>
                       <button 
                         title="Enviar por Email" 

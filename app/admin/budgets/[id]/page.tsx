@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { formatCurrency, formatDateTime } from "@/lib/formatters";
 import Badge from "@/components/ui/Badge";
+import DownloadBudgetButton from "@/components/admin/DownloadBudgetButton";
 import type { Order, OrderItem } from "@/types/database";
 
 interface PageProps {
@@ -40,14 +41,7 @@ export default async function AdminBudgetDetailPage({ params }: PageProps) {
         </div>
         <div className="flex gap-2 items-center">
           <Badge color="yellow">Borrador</Badge>
-          <a
-            href={`/admin/budgets/${order.id}/print`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
-          >
-            Imprimir / PDF
-          </a>
+          <DownloadBudgetButton budgetId={order.id} />
         </div>
       </div>
 
