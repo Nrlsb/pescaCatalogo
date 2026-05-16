@@ -24,11 +24,15 @@ export default async function BudgetsPage() {
   const cotizacion = await getDolarCotizacion();
   
   // Convertir los precios de USD a ARS
-  const convertedProducts = ((productsData as Product[]) || []).map((p) => ({
-    ...p,
-    price: Math.round(p.price * cotizacion),
-    compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * cotizacion) : null,
-  }));
+  const convertedProducts = ((productsData as Product[]) || []).map((p) => {
+    const isUSD = (p as any).currency === "USD" || !(p as any).currency;
+    const rate = isUSD ? cotizacion : 1;
+    return {
+      ...p,
+      price: Math.round(p.price * rate),
+      compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * rate) : null,
+    };
+  });
   
   return (
     <BudgetsClient 

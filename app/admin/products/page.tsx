@@ -79,12 +79,25 @@ export default async function AdminProductsPage() {
                   {(product.categories as { name: string } | null)?.name ?? "-"}
                 </td>
                 <td className="px-5 py-4">
-                  <div className="font-semibold text-gray-900">
-                    U$S {product.price.toFixed(2)}
-                  </div>
-                  <div className="text-xs text-gray-500 font-medium whitespace-nowrap">
-                    ~ {formatCurrency(Math.round(product.price * cotizacion))}
-                  </div>
+                  {product.currency === "ARS" ? (
+                    <>
+                      <div className="font-semibold text-gray-900">
+                        {formatCurrency(product.price)}
+                      </div>
+                      <div className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
+                        ARS (Pesos)
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-semibold text-gray-900">
+                        U$S {product.price.toFixed(2)}
+                      </div>
+                      <div className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                        ~ {formatCurrency(Math.round(product.price * cotizacion))}
+                      </div>
+                    </>
+                  )}
                 </td>
                 <td className="px-5 py-4 text-gray-500 font-mono text-xs">
                   {product.sku ?? "-"}

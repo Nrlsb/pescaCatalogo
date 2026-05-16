@@ -55,11 +55,15 @@ export default async function ShopPage({ searchParams }: PageProps) {
   const cotizacion = await getDolarCotizacion();
   
   const products = rawProducts 
-    ? (rawProducts as Product[]).map(p => ({
-        ...p,
-        price: Math.round(p.price * cotizacion),
-        compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * cotizacion) : null
-      }))
+    ? (rawProducts as Product[]).map(p => {
+        const isUSD = (p as any).currency === "USD" || !(p as any).currency;
+        const rate = isUSD ? cotizacion : 1;
+        return {
+          ...p,
+          price: Math.round(p.price * rate),
+          compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * rate) : null
+        };
+      })
     : null;
 
   // Get categories for filter

@@ -40,6 +40,7 @@ interface ProductFormProps {
     is_active: boolean;
     is_featured: boolean;
     low_stock_threshold: number;
+    currency?: string;
     images: string[];
     product_variants?: Variant[];
     inventory?: { quantity: number }[];
@@ -65,6 +66,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
     is_active: initialData?.is_active ?? true,
     is_featured: initialData?.is_featured ?? false,
     low_stock_threshold: initialData?.low_stock_threshold?.toString() ?? "5",
+    currency: (initialData as any)?.currency ?? "USD",
   });
   const [images, setImages] = useState<string[]>(initialData?.images ?? []);
   const [variants, setVariants] = useState<Variant[]>(
@@ -220,13 +222,27 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
 
       {/* Pricing */}
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-6">
-        <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-          <DollarSign className="text-blue-600" size={20} />
-          <h2 className="font-semibold text-gray-900">Precios</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-gray-100 gap-4">
+          <div className="flex items-center gap-2">
+            <DollarSign className="text-blue-600" size={20} />
+            <h2 className="font-semibold text-gray-900">Precios</h2>
+          </div>
+          <div className="w-52">
+            <Select
+              label="Moneda de origen"
+              name="currency"
+              value={form.currency}
+              onChange={handleChange}
+              options={[
+                { value: "USD", label: "Dólares (USD)" },
+                { value: "ARS", label: "Pesos Argentinos (ARS)" },
+              ]}
+            />
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Input
-            label="Precio de venta (USD) *"
+            label={`Precio de venta (${form.currency}) *`}
             name="price"
             type="number"
             step="0.01"
@@ -234,29 +250,29 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             value={form.price}
             onChange={handleChange}
             required
-            placeholder="15.00"
-            helperText="Se convertirá automáticamente a ARS"
+            placeholder={form.currency === "USD" ? "15.00" : "15000.00"}
+            helperText={form.currency === "USD" ? "Se convertirá automáticamente a ARS usando la cotización del BNA" : "Se mostrará tal cual en la tienda"}
           />
           <Input
-            label="Precio tachado (USD)"
+            label={`Precio tachado (${form.currency})`}
             name="compare_at_price"
             type="number"
             step="0.01"
             min="0"
             value={form.compare_at_price}
             onChange={handleChange}
-            placeholder="20.00"
+            placeholder={form.currency === "USD" ? "20.00" : "20000.00"}
             helperText="Para mostrar descuento en la tienda"
           />
           <Input
-            label="Precio de costo (USD)"
+            label={`Precio de costo (${form.currency})`}
             name="cost_price"
             type="number"
             step="0.01"
             min="0"
             value={form.cost_price}
             onChange={handleChange}
-            placeholder="8.00"
+            placeholder={form.currency === "USD" ? "8.00" : "8000.00"}
             helperText="Solo visible en reportes internos"
           />
         </div>
@@ -365,7 +381,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
                 </div>
                 <div className="w-32">
                   <Input
-                    label="Diferencia precio (USD)"
+                    label={`Diferencia precio (${form.currency})`}
                     type="number"
                     value={v.price_delta.toString()}
                     onChange={(e) =>

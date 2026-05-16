@@ -85,6 +85,7 @@ export interface Database {
           is_active: boolean;
           is_featured: boolean;
           low_stock_threshold: number;
+          currency: string;
           created_at: string;
           updated_at: string;
         };
@@ -104,6 +105,7 @@ export interface Database {
           is_active?: boolean;
           is_featured?: boolean;
           low_stock_threshold?: number;
+          currency?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -123,6 +125,7 @@ export interface Database {
           is_active?: boolean;
           is_featured?: boolean;
           low_stock_threshold?: number;
+          currency?: string;
           updated_at?: string;
         };
       };

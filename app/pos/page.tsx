@@ -87,11 +87,15 @@ export default function POSPage() {
 
     // Aplicar la cotización del dólar BNA para convertir los precios de USD a ARS
     const currentCotizacion = cotizacion ?? 950;
-    result = result.map((p) => ({
-      ...p,
-      price: Math.round(p.price * currentCotizacion),
-      compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * currentCotizacion) : null,
-    }));
+    result = result.map((p) => {
+      const isUSD = (p as any).currency === "USD" || !(p as any).currency;
+      const rate = isUSD ? currentCotizacion : 1;
+      return {
+        ...p,
+        price: Math.round(p.price * rate),
+        compare_at_price: p.compare_at_price ? Math.round(p.compare_at_price * rate) : null,
+      };
+    });
 
     if (selectedCategory) {
       result = result.filter(p => p.category_id === selectedCategory);
