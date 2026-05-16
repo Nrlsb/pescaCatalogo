@@ -122,3 +122,32 @@ export async function PATCH(request: Request, { params }: Params) {
 
   return NextResponse.json({ success: true });
 }
+
+export async function DELETE(_: Request, { params }: Params) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  try {
+    // 1. Eliminar items de la orden
+    const { error: itemsError } = await supabase
+      .from("order_items")
+      .delete()
+      .eq("order_id", id);
+
+    if (itemsError) throw new Error(itemsError.message);
+
+    // 2. Eliminar la orden
+    const { error: orderError } = await supabase
+      .from("orders")
+      .delete()
+      .eq("id", id);
+
+    if (orderError) throw new Error(orderError.message);
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Error deleting order:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+

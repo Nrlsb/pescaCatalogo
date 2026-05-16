@@ -89,6 +89,7 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
   };
 
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDownloadPDF = async (budgetId: string) => {
     setDownloadingId(budgetId);
@@ -103,6 +104,29 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
       alert("Error al descargar el PDF: " + error.message);
     } finally {
       setDownloadingId(null);
+    }
+  };
+
+  const handleDeleteBudget = async (budgetId: string) => {
+    if (!confirm("¿Estás seguro de que deseas eliminar este presupuesto?")) return;
+    
+    setDeletingId(budgetId);
+    try {
+      const res = await fetch(`/api/orders/${budgetId}`, {
+        method: "DELETE",
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Error al eliminar el presupuesto");
+      }
+      
+      router.refresh();
+      alert("Presupuesto eliminado exitosamente");
+    } catch (error: any) {
+      alert("Error al eliminar: " + error.message);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -220,6 +244,14 @@ export default function BudgetsClient({ initialBudgets, products }: BudgetsClien
                         className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                       >
                         <Mail size={18} />
+                      </button>
+                      <button 
+                        title="Eliminar Presupuesto" 
+                        disabled={deletingId === budget.id}
+                        onClick={() => handleDeleteBudget(budget.id)}
+                        className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all disabled:opacity-50"
+                      >
+                        <Trash2 size={18} className={deletingId === budget.id ? "animate-pulse" : ""} />
                       </button>
                       <button 
                         onClick={() => router.push(`/admin/budgets/${budget.id}`)}
