@@ -25,7 +25,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: rawOrder } = await supabase
+  const { data: rawOrder, error: queryError } = await supabase
     .from("orders")
     .select("*, order_items (*), profiles (full_name)")
     .eq("id", id)
@@ -36,7 +36,11 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
     profiles: { full_name: string } | null;
   };
   const order = rawOrder as OrderWithItems | null;
-  if (!order) notFound();
+  
+  if (!order) {
+    console.error("Order not found or error:", queryError, "ID:", id);
+    return <div>Error loading order: {queryError?.message || 'Not found'}</div>;
+  }
 
   const shipping = order.shipping_address as {
     line1?: string;
