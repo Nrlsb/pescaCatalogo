@@ -14,6 +14,7 @@ import { useNotification } from "@/components/ui/NotificationProvider";
 interface Category {
   id: string;
   name: string;
+  parent_id?: string | null;
 }
 
 interface Variant {
@@ -255,7 +256,31 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
           name="category_id"
           value={form.category_id}
           onChange={handleChange}
-          options={categories.map((c) => ({ value: c.id, label: c.name }))}
+          options={(() => {
+            const parents = categories.filter((c) => !c.parent_id);
+            const subs = categories.filter((c) => c.parent_id);
+            const options: { value: string; label: string }[] = [];
+            
+            parents.forEach((parent) => {
+              options.push({ value: parent.id, label: parent.name });
+              const children = subs.filter((child) => child.parent_id === parent.id);
+              children.forEach((child) => {
+                options.push({
+                  value: child.id,
+                  label: `\u00A0\u00A0\u00A0\u00A0└─ ${child.name}`,
+                });
+              });
+            });
+
+            const orphaned = subs.filter(
+              (child) => !parents.some((p) => p.id === child.parent_id)
+            );
+            orphaned.forEach((child) => {
+              options.push({ value: child.id, label: `└─ ${child.name}` });
+            });
+
+            return options;
+          })()}
           placeholder="Sin categoría"
         />
       </div>

@@ -35,10 +35,22 @@ export default async function CategoryPage({ params }: PageProps) {
     isAdmin = (profile as { role: string } | null)?.role === "admin";
   }
 
+  // Obtener IDs de las subcategorías si las hay
+  const { data: subCategories } = await supabase
+    .from("categories")
+    .select("id")
+    .eq("parent_id", category.id)
+    .eq("is_active", true);
+
+  const categoryIds = [
+    category.id,
+    ...((subCategories as { id: string }[] | null)?.map((s) => s.id) || []),
+  ];
+
   const { data: rawProducts } = await supabase
     .from("products")
     .select("*, inventory (quantity)")
-    .eq("category_id", category.id)
+    .in("category_id", categoryIds)
     .eq("is_active", true)
     .order("created_at", { ascending: false });
     

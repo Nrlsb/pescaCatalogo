@@ -19,9 +19,9 @@ export default async function EditProductPage({ params }: PageProps) {
       .single(),
     supabase
       .from("categories")
-      .select("id, name")
+      .select("id, name, parent_id")
       .eq("is_active", true)
-      .order("name"),
+      .order("sort_order"),
   ]);
 
   if (!product) notFound();

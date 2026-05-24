@@ -87,20 +87,49 @@ export default async function ShopPage({ searchParams }: PageProps) {
                   Todos los productos
                 </a>
               </li>
-              {categories?.map((cat: Category) => (
-                <li key={cat.id}>
-                  <a
-                    href={`/shop/category/${cat.slug}`}
-                    className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                      params.category === cat.slug
-                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                    }`}
-                  >
-                    {cat.name}
-                  </a>
-                </li>
-              ))}
+              {(() => {
+                const parents = categories?.filter((c) => !c.parent_id) || [];
+                const subs = categories?.filter((c) => c.parent_id) || [];
+
+                return parents.map((parent: Category) => {
+                  const children = subs.filter((child) => child.parent_id === parent.id);
+                  const isParentActive = params.category === parent.slug;
+                  const isAnyChildActive = children.some((child) => params.category === child.slug);
+
+                  return (
+                    <li key={parent.id} className="space-y-1">
+                      <a
+                        href={`/shop/category/${parent.slug}`}
+                        className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                          isParentActive
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                            : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                        }`}
+                      >
+                        {parent.name}
+                      </a>
+                      {children.length > 0 && (
+                        <ul className="pl-4 space-y-1 mt-1 border-l border-gray-100 ml-3">
+                          {children.map((child: Category) => (
+                            <li key={child.id}>
+                              <a
+                                href={`/shop/category/${child.slug}`}
+                                className={`block px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                  params.category === child.slug
+                                    ? "text-primary bg-secondary/50 font-semibold"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                                }`}
+                              >
+                                {child.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                });
+              })()}
             </ul>
 
             <div className="mt-10 pt-8 border-t border-gray-100">
